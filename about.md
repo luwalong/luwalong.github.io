@@ -1,74 +1,57 @@
 ---
 layout: article
-titles:
-  # @start locale config
-  en      : &EN       About
-  en-GB   : *EN
-  en-US   : *EN
-  en-CA   : *EN
-  en-AU   : *EN
-  zh-Hans : &ZH_HANS  关于
-  zh      : *ZH_HANS
-  zh-CN   : *ZH_HANS
-  zh-SG   : *ZH_HANS
-  zh-Hant : &ZH_HANT  關於
-  zh-TW   : *ZH_HANT
-  zh-HK   : *ZH_HANT
-  ko      : &KO       소개
-  ko-KR   : *KO
-  fr      : &FR       À propos
-  fr-BE   : *FR
-  fr-CA   : *FR
-  fr-CH   : *FR
-  fr-FR   : *FR
-  fr-LU   : *FR
-  # @end locale config
+title: About Me
 key: page-about
 ---
 
-![TeXt Theme](https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/TeXt-home.jpg)
+Education
+======
 
-TeXt is a super customizable Jekyll theme for personal site, team site, blog, project, documentation, etc. Similar to iOS 11 style, it has large and prominent titles, round buttons and cards.
++ MSc in [Data Science](https://www.inf.ethz.ch/studies/master/master-ds.html), *Eidgenössische Technische Hochschule Zürich*, 09.2018 -
++ BAs in [Information Science & Culture](http://isc.snu.ac.kr), *Seoul National University*, 09.2013 - 08.2018
++ BSc in [Computer Science & Engineering](https://cse.snu.ac.kr), *Seoul National University*, 03.2012 - 08.2018
++ Student, *Seoul Science High School*, 03.2009 - 02.2012
 
-```javascript
-(() => console.log('Hello, World!'))();
-```
+Topics in Interest
+======
 
-## Features
++ Robustness Certification of Neural Networks
++ Generative Adversarial Networks (GANs)
++ General Data Science
++ Quantum Informatics
 
-- Responsive
-- Semantic HTML
-- Skins
-- Highlight Theme
-- Internationalization
-- Search
-- Table of contents
-- Authors
-- Additional styles (alert, tag, image, icon, button, grid, etc)
-- Extensions (audios, videos, slides, demos)
-- Markdown enhancements ([MathJax](https://www.mathjax.org/), [mermaid](https://mermaidjs.github.io/), [chartjs](http://www.chartjs.org/))
-- Sharing ([AddToAny](https://www.addtoany.com/), [AddThis](https://www.addthis.com/))
-- Comments ([Disqus](https://disqus.com/), [Gitalk](https://gitalk.github.io/), [Valine](https://valine.js.org/en/))
-- Pageview ([LeanCloud](https://leancloud.cn/))
-- Analytics ([Google Analytics](https://analytics.google.com/analytics/web/))
-- RSS ([jekyll-feed](https://github.com/jekyll/jekyll-feed))
+Research Experience
+======
 
-## Skins
++ **Student Research Assistant** @[SRI lab](https://sri.inf.ethz.ch/) (supervisor: Prof. Dr. Martin Vechev), 06.2019 - 10.2020
+    - Developed R2: robustness certifiation of recurrent neural architectures by polyhedral relaxation via linear programming and optimisation
+    - [Fast and Effective Robustness Certifiation for Recurrent Neural Networks](https://arxiv.org/abs/2005.13300) available on arXiv
++ **Undergraduate Intern** @[hci+d lab](http://hcid.snu.ac.kr/) (supervisor: Prof. Dr. Joonhwan Lee), 10.2016 - 02.2017, 07.2017 - 12.2017
+	- Research and application to automated formal reporting system based on Korean language
+	- HCI approach for user case segmentation of machine generated earthquake alert
++ **Research Commissioner** @[KETI](https://www.keti.re.kr/eng/main/main.php) (supervisor: Senior Researcher Youngmin Ji), 01.2014 - 02.2014
+	- Visualized real-time building energy consumption with WebGL and three.js
 
-TeXt has 6 built-in skins, you can also set up your own skin.
+Teaching Experience
+======
 
-| `default` | `dark` | `forest` |
-| --- |  --- | --- |
-| ![Default](https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_default.jpg) | ![Dark](https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_dark.jpg) | ![Forest](https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_forest.jpg) |
++ **Undergraduate Teaching Assistant** @Seoul National University (instructor: Jonghwan Oh), 09.2017 - 12.2017
+	- *Introduction to Information-Culture Technology*
+	- Taught fundamental concepts of programming and basic coding skills to novice-level undergraduates in a mandatory course of Information and Multimedia Culture
+	- Assessed student assignments (7 individual assignments, 1 team project) and answered questions from online/offline
 
-| `ocean` | `chocolate` | `orange` |
-| --- |  --- | --- |
-| ![Ocean](https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_ocean.jpg) | ![Chocolate](https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_chocolate.jpg) | ![Orange](https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_orange.jpg) |
 
-### Highlight Theme
+Awards and Honors
+======
 
-TeXt use [Tomorrow](https://github.com/chriskempson/tomorrow-theme) as the highlight theme.
++ **National Scholarship for Science and Engineering** from [KOSAF](http://www.kosaf.go.kr/)
+	- Four-year full tuition scholarship for Seoul National University
++ **Third Place** from ACM-ICPC Asia Daejeon Regional Contest
+	- Ranked 3rd among the participants as a team member of 7HAH
+	- [Standing](https://icpc.baylor.edu/regionals/finder/daejeon-2012/standings)
++ **Third Prize** from SNUCSE Programming Contest
+	- Ranked 3rd among the CSE undergraduates
 
-| `tomorrow` | `tomorrow-night` | `tomorrow-night-eighties` | `tomorrow-night-blue` | `tomorrow-night-bright` |
-| --- |  --- | --- | --- |  --- |
-| ![Tomorrow](https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow.png) | ![Tomorrow Night](https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night.png) | ![Tomorrow Night Eighties](https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night-eighties.png) | ![Tomorrow Night Blue](https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night-blue.png) | ![Tomorrow Night Bright](https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night-bright.png) |
+
+[linkedin](https://www.linkedin.com/in/wonryong/) / [facebook](https://www.facebook.com/luwalong) / [email](mailto:w.r.ryou@gmail.com)
+
