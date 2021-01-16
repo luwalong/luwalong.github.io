@@ -135,7 +135,7 @@ and $\epsilon=10^{-4}$ as an arbitrary small number.
 This looks sneezy but this means the empirical mean of the perceptual distances
 between consequently generated images. 
 
-This measure fits perfectly to the objective of StyleGAN - to learn the entangled
+This measure fits perfectly to the objective of StyleGAN - to learn the disentangled
 continuously controllable styles with the latent vectors.
 
 
