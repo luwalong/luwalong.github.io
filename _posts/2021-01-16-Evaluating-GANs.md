@@ -79,7 +79,7 @@ not covering the whole labels.
 * miss useful 'real' features, as the metric only relies on $\mathcal{M}$.
 
 
-### Fréchet Inception Distance
+### Fréchet Inception Distance (FID)
 
 FID is suggested to overcome IS's shortcomings. This idea is originated
 from the signal difference metric. According to DeepLearning.ai's explanation,
@@ -104,7 +104,7 @@ Based on my experience, [pytorch-FID](https://github.com/mseitzer/pytorch-fid) t
 ~2 min for 3K and 5K image pools one Nvidia Titan RTX.
 
 
-### Maximum Mean Discrepancy
+### Maximum Mean Discrepancy (MMD)
 
 Above two metric are widely used in practice, but we can also take a look at
 a non-Inception-based metric. MMD measures the dissimiliarity between the real
@@ -119,7 +119,7 @@ space of pre-trained ResNet. The computing complexity is also low, so some studi
 suggest to use this metric.[^2] 
 
 
-### Bonus: Perceptual Path Length
+### Bonus: Perceptual Path Length (PPL)
 
 For the last metric, we can also take look at the off-topic-but-maybe-useful
 measurement. PPL is first introduced in StyleGAN[^3] for measuring "how a generator
