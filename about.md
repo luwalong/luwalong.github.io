@@ -4,24 +4,21 @@ title: About Me
 key: page-about
 ---
 
-Education
-======
+## Education
 
 + MSc in [Data Science](https://www.inf.ethz.ch/studies/master/master-ds.html), *Eidgenössische Technische Hochschule Zürich*, 09.2018 -
 + BAs in [Information Science & Culture](http://isc.snu.ac.kr), *Seoul National University*, 09.2013 - 08.2018
 + BSc in [Computer Science & Engineering](https://cse.snu.ac.kr), *Seoul National University*, 03.2012 - 08.2018
 + Student, *Seoul Science High School*, 03.2009 - 02.2012
 
-Topics in Interest
-======
+## Topics in Interest
 
 + Robustness Certification of Neural Networks
 + Generative Adversarial Networks (GANs)
 + General Data Science
 + Quantum Informatics
 
-Research Experience
-======
+## Research Experience
 
 + **Student Research Assistant** @[SRI lab](https://sri.inf.ethz.ch/) (supervisor: Prof. Dr. Martin Vechev), 06.2019 - 10.2020
     - Developed R2: robustness certifiation of recurrent neural architectures by polyhedral relaxation via linear programming and optimisation
@@ -32,8 +29,7 @@ Research Experience
 + **Research Commissioner** @[KETI](https://www.keti.re.kr/eng/main/main.php) (supervisor: Senior Researcher Youngmin Ji), 01.2014 - 02.2014
 	- Visualized real-time building energy consumption with WebGL and three.js
 
-Teaching Experience
-======
+## Teaching Experience
 
 + **Undergraduate Teaching Assistant** @Seoul National University (instructor: Jonghwan Oh), 09.2017 - 12.2017
 	- *Introduction to Information-Culture Technology*
@@ -41,8 +37,7 @@ Teaching Experience
 	- Assessed student assignments (7 individual assignments, 1 team project) and answered questions from online/offline
 
 
-Awards and Honors
-======
+## Awards and Honors
 
 + **National Scholarship for Science and Engineering** from [KOSAF](http://www.kosaf.go.kr/)
 	- Four-year full tuition scholarship for Seoul National University
