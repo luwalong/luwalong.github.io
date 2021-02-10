@@ -1,6 +1,6 @@
 ---
 title: Evaluating GANs
-tags: GAN metric
+tags: GAN metric IS FID MMD PPL
 ---
 
 Although Generative Adversarial Networks (GANs) are breaking the ground in daily
