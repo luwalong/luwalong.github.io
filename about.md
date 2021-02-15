@@ -15,14 +15,19 @@ key: page-about
 
 + Robustness Certification of Neural Networks
 + Generative Adversarial Networks (GANs)
++ Explainable Artificial Intelligence
 + General Data Science
-+ Quantum Informatics
++ Artificial Intelligence Ethics
 
 ## Research Experience
 
++ **Master's Thesis** @[LatticeFlow](https://latticeflow.ai/), 10.2020 -
+  - Transforming images semantically with several generative approaches, including GANs
+  - Interpreting the inference for human perception
+  - Handling VAE, InfoGAN, ACGAN, CycleGAN, StyleGAN, partial convolution, etc.
 + **Student Research Assistant** @[SRI lab](https://sri.inf.ethz.ch/) (supervisor: Prof. Dr. Martin Vechev), 06.2019 - 10.2020
-    - Developed R2: robustness certifiation of recurrent neural architectures by polyhedral relaxation via linear programming and optimisation
-    - [Fast and Effective Robustness Certifiation for Recurrent Neural Networks](https://arxiv.org/abs/2005.13300) available on arXiv
+  - Developed R2: robustness certifiation of recurrent neural architectures by polyhedral relaxation via linear programming and optimisation
+  - [Fast and Effective Robustness Certifiation for Recurrent Neural Networks](https://arxiv.org/abs/2005.13300) available on arXiv
 + **Undergraduate Intern** @[hci+d lab](http://hcid.snu.ac.kr/) (supervisor: Prof. Dr. Joonhwan Lee), 10.2016 - 02.2017, 07.2017 - 12.2017
 	- Research and application to automated formal reporting system based on Korean language
 	- HCI approach for user case segmentation of machine generated earthquake alert
@@ -46,6 +51,8 @@ key: page-about
 	- [Standing](https://icpc.baylor.edu/regionals/finder/daejeon-2012/standings)
 + **Third Prize** from SNUCSE Programming Contest
 	- Ranked 3rd among the CSE undergraduates
++ **Bronze Medal** from IOI 2010
++ **Silver Medal** from APIO 2010
 
 
 [linkedin](https://www.linkedin.com/in/wonryong/) / [facebook](https://www.facebook.com/luwalong) / [email](mailto:w.r.ryou@gmail.com)
