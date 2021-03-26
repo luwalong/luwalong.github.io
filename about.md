@@ -11,6 +11,7 @@ key: page-about
 + BSc in [Computer Science & Engineering](https://cse.snu.ac.kr), *Seoul National University*, 03.2012 - 08.2018
 + Student, *Seoul Science High School*, 03.2009 - 02.2012
 
+
 ## Topics in Interest
 
 + Robustness Certification of Neural Networks
@@ -19,9 +20,16 @@ key: page-about
 + General Data Science
 + Artificial Intelligence Ethics
 
+
+## Working Experience
+
++ **Machine Learning Engineer** @[Quora](https://quora.com/), 09.2021 - 
+  - TBA
+
+
 ## Research Experience
 
-+ **Master's Thesis** @[LatticeFlow](https://latticeflow.ai/), 10.2020 -
++ **Master's Thesis** @[LatticeFlow](https://latticeflow.ai/), 10.2020 - 05.2021
   - Transforming images semantically with several generative approaches, including GANs
   - Interpreting the inference for human perception
   - Handling VAE, InfoGAN, ACGAN, CycleGAN, StyleGAN, partial convolution, etc.
@@ -33,6 +41,7 @@ key: page-about
 	- HCI approach for user case segmentation of machine generated earthquake alert
 + **Research Commissioner** @[KETI](https://www.keti.re.kr/eng/main/main.php) (supervisor: Senior Researcher Youngmin Ji), 01.2014 - 02.2014
 	- Visualized real-time building energy consumption with WebGL and three.js
+
 
 ## Teaching Experience
 
