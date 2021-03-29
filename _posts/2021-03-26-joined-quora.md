@@ -15,6 +15,6 @@ wonderful opportunity.
 
 I'll be located in Vancouver with my wife and start to work remotely, probably 
 from August. The only thing left for me now is successfully graduating from 
-ETH Z\"urich :) Wish me luck!
+ETH Zürich :) Wish me luck!
 
 Until next time!
