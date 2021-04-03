@@ -1,6 +1,6 @@
 ---
 title: Interpretable Machine Learning - Pilot
-tags: interpretabie_machine_learning book_reading
+tags: interpretable_machine_learning book_reading
 ---
 
 To my beloved Swimmer pals and strangers: I want to introduce this wonderful
