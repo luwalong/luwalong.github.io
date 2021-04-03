@@ -1,5 +1,5 @@
 ---
-title: Interpretable Machine Learning: Pilot
+title: Interpretable Machine Learning - Pilot
 tags: interpretabie_machine_learning book_reading
 ---
 
