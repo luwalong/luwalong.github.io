@@ -27,6 +27,14 @@ key: page-about
   - TBA
 
 
+## Publications
+
++ **Scalable Polyhedral Verification of Recurrent Neural Networks** / CAV 2021
+  - *Wonryong Ryou*, Jiayu Chen, Mislav Balunovic, Gagandeep Singh, Andrei Dan, Martin Vechev
++ **Prediction of atomic configuration in binary nanoparticles by genetic algorithm** / Journal of the Korean Ceramic Society 48 (6)
+  - JS Oh, *WR Ryou*, SC Lee, JH Choi
+
+
 ## Research Experience
 
 + **Master's Thesis** @[LatticeFlow](https://latticeflow.ai/), 10.2020 - 05.2021
