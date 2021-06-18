@@ -6,7 +6,7 @@ key: page-about
 
 ## Education
 
-+ MSc in [Data Science](https://www.inf.ethz.ch/studies/master/master-ds.html), *Eidgenössische Technische Hochschule Zürich*, 09.2018 -
++ MSc in [Data Science](https://www.inf.ethz.ch/studies/master/master-ds.html), *Eidgenössische Technische Hochschule Zürich*, 09.2018 - 05.2021
 + BAs in [Information Science & Culture](http://isc.snu.ac.kr), *Seoul National University*, 09.2013 - 08.2018
 + BSc in [Computer Science & Engineering](https://cse.snu.ac.kr), *Seoul National University*, 03.2012 - 08.2018
 + Student, *Seoul Science High School*, 03.2009 - 02.2012
@@ -42,8 +42,8 @@ key: page-about
   - Interpreting the inference for human perception
   - Handling VAE, InfoGAN, ACGAN, CycleGAN, StyleGAN, partial convolution, etc.
 + **Student Research Assistant** @[SRI lab](https://sri.inf.ethz.ch/) (supervisor: Prof. Dr. Martin Vechev), 06.2019 - 10.2020
-  - Developed R2: robustness certifiation of recurrent neural architectures by polyhedral relaxation via linear programming and optimisation
-  - [Fast and Effective Robustness Certifiation for Recurrent Neural Networks](https://arxiv.org/abs/2005.13300) available on arXiv
+  - Developed PROVER: robustness certifiation of recurrent neural architectures by polyhedral relaxation via linear programming and optimisation
+  - [Scalable Polyhedral Verification of Recurrent Neural Networks](https://arxiv.org/abs/2005.13300) available on arXiv
 + **Undergraduate Intern** @[hci+d lab](http://hcid.snu.ac.kr/) (supervisor: Prof. Dr. Joonhwan Lee), 10.2016 - 02.2017, 07.2017 - 12.2017
 	- Research and application to automated formal reporting system based on Korean language
 	- HCI approach for user case segmentation of machine generated earthquake alert

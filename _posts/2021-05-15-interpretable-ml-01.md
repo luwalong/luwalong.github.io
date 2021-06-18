@@ -13,8 +13,8 @@ Nevertheless, first things first. Here I introduce 6+ 'classical' models for
 | **Algorithm** | **Linear** | **Monotone** | **Interaction** | **Classification** | **Regression** |
 |:---|:---:|:---:|:---:|:---:|:---:|
 | [Linear regression](#linear-regression) | O | O | X | X | O |
-| [Logistic regression](#logistic-regression) | X | O | X | O | X |
-| [Decision trees](#decision-trees) | X | ? | O | O | O |
+| [Logistic regression](#) | X | O | X | O | X |
+| [Decision trees]({% post_url 2021-06-19-interpretable-ml-02 %}) | X | ? | O | O | O |
 | [RuleFit](#rulefit) | O | X | O | O | O |
 | [Naive Bayes](#naive-bayes) | X | O | X | O | X |
 | [k-NN](#k-nearest-neighbours) | X | X | X | O | O |
@@ -179,7 +179,7 @@ $$ CI(\mathbb{E} y_0, (1-\alpha) \cdot 100) = \mathbf{x}_0^\intercal \hat\beta \
 $$ CI(y_0, (1-\alpha) \cdot 100) = \mathbf{x}_0^\intercal \hat\beta \pm \hat\sigma \sqrt{1+\mathbf{x}_0^\intercal (\mathbf{X}^\intercal \mathbf{X})^{-1} \mathbf{x}_0} \cdot t_{1-\alpha/2,\ n-p}. $$
 
 
-## Pros and cons on interpretability
+### Pros and cons on interpretability
 
 So far we took a look for the linear regression and how we interpret the results
 from the algorithm. Here, we summarise the merits and drawbacks of the linear
