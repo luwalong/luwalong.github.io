@@ -1,6 +1,6 @@
 ---
 title: Interpretable Machine Learning - Interpretable Models - (2) Decision Tree
-tags: interpretable_machine_learning book_reading decision_tree
+tags: interpretable_machine_learning book_reading decision_tree neural_backed_decision_tree
 ---
 
 Logistic regression and GLM are somehow direct extension from the linear regression
