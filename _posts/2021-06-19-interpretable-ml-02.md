@@ -108,7 +108,7 @@ layer of the pre-trained neural network. Denote the row vector of $W$ as $w_i$.
 structure of the decision tree shape with the complete binary tree, and allocate
 the row vectors $w_i$ to each leaf node. For the intermediate nodes, set with
 the average weight vector of all the leaf nodes in the subtree rooted by that
-node, i.e., $w'_i = \frac{1}{|L(i)|} \sum_{j \in L(i)} w_j$.
+node, i.e., $$ w'_i = \frac{1}{|L(i)|} \sum_{j \in L(i)} w_j $$
 1. **Compute node probabilities.** For each sample $x$, node $i$, and its child $j \in C(i)$,
 $$ p(j|i) = \texttt{Softmax}(n_i^{\intercal} x) [j], \text{ where } n_i = (w_j^{\intercal} x)_{j \in C(i)}. $$
 1. **Pick a leaf using path probabilities.** Denote the next traversal node of $i$ as $C_k(i)$ on the existing path $P_k$.
