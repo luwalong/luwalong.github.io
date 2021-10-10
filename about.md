@@ -23,8 +23,9 @@ key: page-about
 
 ## Working Experience
 
-+ **Machine Learning Engineer** @[Quora](https://quora.com/), 09.2021 - 
-  - TBA
++ **Machine Learning Engineer** @[Quora](https://quora.com/), 09.2021 -
+  - In distribution team (contents recommendation)
+  - Setup hypothesis - qualitatively evaluate - implement - run experiment
 
 
 ## Publications
