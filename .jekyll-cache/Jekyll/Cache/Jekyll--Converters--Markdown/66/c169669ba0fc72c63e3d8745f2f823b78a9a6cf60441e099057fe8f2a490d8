@@ -1,0 +1,70 @@
+I"<h2 id="overview">Overview</h2>
+
+<p>After all those interpretable models, we now go forward to <strong>model-agnostic</strong> methods. One obvious merit among many pros is that model-agnostic methods do not depend on the model type we’re interested in. Ribeiro et al.<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup> claims that there should be three desirable aspects of a model-agnostic explanation system:</p>
+<ul>
+  <li><strong>Model flexibility</strong>: independence on the models.</li>
+  <li><strong>Explanation flexibility</strong>: should not be limited to one form of explanation.</li>
+  <li><strong>Representation flexibility</strong>: should have various feature representation methods to effectively explain the model in certain domain.</li>
+</ul>
+
+<h2 id="partial-dependence-plot">Partial Dependence Plot</h2>
+
+<p><img src="/assets/images/2021-07-24-pdp.png" alt="partial depdence plot" /></p>
+<blockquote>
+  <p>Partial dependce plot using scikit-learn for California Housing Dataset.</p>
+</blockquote>
+
+<p>PDP (or PD plot), for short, is one of the premitive method to see the effects of one or two features, suggested by Friedman<sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup>. The partial dependence function for regression is defined as:</p>
+
+\[\hat{f}_{x_S} (x_S) = \mathbb{E}_{x_C} \hat{f} (x_S, x_C) = \int \hat{f} (x_S, x_C) dP(x_C) \approx \frac{1}{n} \sum_{i=1}^n \hat{f} (x_S, x^{(i)}_C)\]
+
+<p>Here, $x_S$ is the set of features we are interested in (usually one or two), and $x_C$ consists of all other complement features. $\hat{f}$ represents the model. Since the exact expectation is only theoretically calculable, we estimate the marginalised model by Monte Carlo method, as stated in the last term above.</p>
+
+<p>An assumption of the PDP is that the features in $C$ are not correlated with the features in S. If this assumption is violated, the averages calculated for the partial dependence plot will include data points that are very unlikely or even impossible.</p>
+
+<p>For classification where the machine learning model outputs probabilities, the partial dependence plot displays the probability for a certain class given different values for feature(s) in $S$. An easy way to deal with multiple classes is to draw one line or plot per class.</p>
+
+<p>PDP is a global method: The method considers all instances and gives a statement about the global relationship of a feature with the predicted outcome.</p>
+
+<h3 id="categorical-features">Categorical features</h3>
+
+<p>So far, we have only considered numerical features. For categorical features, the partial dependence is very easy to calculate. For each of the categories, we get a PDP estimate by forcing all data instances to have the same category. For example, if we look at the bike rental dataset and are interested in the partial dependence plot for the season, we get 4 numbers, one for each season. To compute the value for “summer”, we replace the season of all data instances with “summer” and average the predictions.</p>
+
+<h3 id="pros-and-cons">Pros and cons</h3>
+
+<p><strong>Pros</strong></p>
+
+<p>The computation of partial dependence plots is <strong>intuitive</strong>: The partial dependence function at a particular feature value represents the average prediction if we force all data points to assume that feature value.</p>
+
+<p>If the feature for which you computed the PDP is not correlated with the other features, then the PDPs perfectly represent how the feature influences the prediction on average. In the uncorrelated case, the <strong>interpretation is clear</strong>: The partial dependence plot shows how the average prediction in your dataset changes when the $j$-th feature is changed. Note that this merit remains only in the uncorrelated situation.</p>
+
+<p>Partial dependence plots are easy to implement.</p>
+
+<p>The calculation for the partial dependence plots has a <strong>causal interpretation</strong>. We intervene on a feature and measure the changes in the predictions. In doing so, we analyze the causal relationship between the feature and the prediction.<sup id="fnref:3" role="doc-noteref"><a href="#fn:3" class="footnote" rel="footnote">3</a></sup> The relationship is causal for the model – because we explicitly model the outcome as a function of the features – but not necessarily for the real world!</p>
+
+<p><strong>Cons</strong></p>
+
+<p>The realistic <strong>maximum number of features</strong> in a partial dependence function is <em>two</em>. This is not the fault of PDPs, but of the 2-dimensional representation (paper or screen) and also of our inability to imagine more than 3 dimensions.</p>
+
+<p>Some PD plots do not show the <strong>feature distribution</strong>. Omitting the distribution can be misleading, because you might overinterpret regions with almost no data. This problem is easily solved by showing a rug (indicators for data points on the x-axis) or a histogram.</p>
+
+<p>The <strong>assumption of independence</strong> is the biggest issue with PD plots. It is assumed that the feature(s) for which the partial dependence is computed are not correlated with other features. For example, suppose you want to predict how fast a person walks, given the person’s weight and height. For the partial dependence of one of the features, e.g. height, we assume that the other features (weight) are not correlated with height, which is obviously a false assumption. For the computation of the PDP at a certain height (e.g. 200 cm), we average over the marginal distribution of weight, which might include a weight below 50 kg, which is unrealistic for a 2 meter person. In other words: When the features are correlated, we create new data points in areas of the feature distribution where the actual probability is very low (for example it is unlikely that someone is 2 meters tall but weighs less than 50 kg). One solution to this problem is Accumulated Local Effect plots or short ALE plots that work with the conditional instead of the marginal distribution.</p>
+
+<p><strong>Heterogeneous effects might be hidden</strong> because PD plots only show the average marginal effects. Suppose that for a feature half your data points have a positive association with the prediction – the larger the feature value the larger the prediction – and the other half has a negative association – the smaller the feature value the larger the prediction. The PD curve could be a horizontal line, since the effects of both halves of the dataset could cancel each other out. You then conclude that the feature has no effect on the prediction. By plotting the individual conditional expectation curves instead of the aggregated line, we can uncover heterogeneous effects.</p>
+
+<p><em>note: this post is almost identical to the Molnar’s <a href="https://christophm.github.io/interpretable-ml-book/pdp.html">original page</a>. Refer his page for the examples.</em></p>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>Ribeiro, Marco Tulio, Sameer Singh, and Carlos Guestrin. “Model-agnostic interpretability of machine learning.” ICML Workshop on Human Interpretability in Machine Learning. (2016). <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p>Friedman, Jerome H. “Greedy function approximation: A gradient boosting machine.” Annals of statistics (2001): 1189-1232. <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:3" role="doc-endnote">
+      <p>Zhao, Qingyuan, and Trevor Hastie. “Causal interpretations of black-box models.” Journal of Business &amp; Economic Statistics 39.1 (2021): 272-281. <a href="#fnref:3" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+:ET

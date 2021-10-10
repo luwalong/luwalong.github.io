@@ -1,0 +1,1064 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-10-10T13:00:48-07:00</updated><id>/feed.xml</id><title type="html">Wonryong Ryou</title><subtitle>Personal webpage of wryou
+</subtitle><author><name>Wonryong Ryou</name><email>w.r.ryou@gmail.com</email></author><entry><title type="html">Interpretable Machine Learning - Model-Agnostic Methods - (1) Partial Dependence Plot (PDP)</title><link href="/2021/07/24/interpretable-ml-04.html" rel="alternate" type="text/html" title="Interpretable Machine Learning - Model-Agnostic Methods - (1) Partial Dependence Plot (PDP)" /><published>2021-07-24T00:00:00-07:00</published><updated>2021-07-24T00:00:00-07:00</updated><id>/2021/07/24/interpretable-ml-04</id><content type="html" xml:base="/2021/07/24/interpretable-ml-04.html">&lt;h2 id=&quot;overview&quot;&gt;Overview&lt;/h2&gt;
+
+&lt;p&gt;After all those interpretable models, we now go forward to &lt;strong&gt;model-agnostic&lt;/strong&gt; methods. One obvious merit among many pros is that model-agnostic methods do not depend on the model type we’re interested in. Ribeiro et al.&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; claims that there should be three desirable aspects of a model-agnostic explanation system:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Model flexibility&lt;/strong&gt;: independence on the models.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Explanation flexibility&lt;/strong&gt;: should not be limited to one form of explanation.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Representation flexibility&lt;/strong&gt;: should have various feature representation methods to effectively explain the model in certain domain.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;partial-dependence-plot&quot;&gt;Partial Dependence Plot&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/2021-07-24-pdp.png&quot; alt=&quot;partial depdence plot&quot; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Partial dependce plot using scikit-learn for California Housing Dataset.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;PDP (or PD plot), for short, is one of the premitive method to see the effects of one or two features, suggested by Friedman&lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;. The partial dependence function for regression is defined as:&lt;/p&gt;
+
+\[\hat{f}_{x_S} (x_S) = \mathbb{E}_{x_C} \hat{f} (x_S, x_C) = \int \hat{f} (x_S, x_C) dP(x_C) \approx \frac{1}{n} \sum_{i=1}^n \hat{f} (x_S, x^{(i)}_C)\]
+
+&lt;p&gt;Here, $x_S$ is the set of features we are interested in (usually one or two), and $x_C$ consists of all other complement features. $\hat{f}$ represents the model. Since the exact expectation is only theoretically calculable, we estimate the marginalised model by Monte Carlo method, as stated in the last term above.&lt;/p&gt;
+
+&lt;p&gt;An assumption of the PDP is that the features in $C$ are not correlated with the features in S. If this assumption is violated, the averages calculated for the partial dependence plot will include data points that are very unlikely or even impossible.&lt;/p&gt;
+
+&lt;p&gt;For classification where the machine learning model outputs probabilities, the partial dependence plot displays the probability for a certain class given different values for feature(s) in $S$. An easy way to deal with multiple classes is to draw one line or plot per class.&lt;/p&gt;
+
+&lt;p&gt;PDP is a global method: The method considers all instances and gives a statement about the global relationship of a feature with the predicted outcome.&lt;/p&gt;
+
+&lt;h3 id=&quot;categorical-features&quot;&gt;Categorical features&lt;/h3&gt;
+
+&lt;p&gt;So far, we have only considered numerical features. For categorical features, the partial dependence is very easy to calculate. For each of the categories, we get a PDP estimate by forcing all data instances to have the same category. For example, if we look at the bike rental dataset and are interested in the partial dependence plot for the season, we get 4 numbers, one for each season. To compute the value for “summer”, we replace the season of all data instances with “summer” and average the predictions.&lt;/p&gt;
+
+&lt;h3 id=&quot;pros-and-cons&quot;&gt;Pros and cons&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;Pros&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The computation of partial dependence plots is &lt;strong&gt;intuitive&lt;/strong&gt;: The partial dependence function at a particular feature value represents the average prediction if we force all data points to assume that feature value.&lt;/p&gt;
+
+&lt;p&gt;If the feature for which you computed the PDP is not correlated with the other features, then the PDPs perfectly represent how the feature influences the prediction on average. In the uncorrelated case, the &lt;strong&gt;interpretation is clear&lt;/strong&gt;: The partial dependence plot shows how the average prediction in your dataset changes when the $j$-th feature is changed. Note that this merit remains only in the uncorrelated situation.&lt;/p&gt;
+
+&lt;p&gt;Partial dependence plots are easy to implement.&lt;/p&gt;
+
+&lt;p&gt;The calculation for the partial dependence plots has a &lt;strong&gt;causal interpretation&lt;/strong&gt;. We intervene on a feature and measure the changes in the predictions. In doing so, we analyze the causal relationship between the feature and the prediction.&lt;sup id=&quot;fnref:3&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:3&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt; The relationship is causal for the model – because we explicitly model the outcome as a function of the features – but not necessarily for the real world!&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Cons&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The realistic &lt;strong&gt;maximum number of features&lt;/strong&gt; in a partial dependence function is &lt;em&gt;two&lt;/em&gt;. This is not the fault of PDPs, but of the 2-dimensional representation (paper or screen) and also of our inability to imagine more than 3 dimensions.&lt;/p&gt;
+
+&lt;p&gt;Some PD plots do not show the &lt;strong&gt;feature distribution&lt;/strong&gt;. Omitting the distribution can be misleading, because you might overinterpret regions with almost no data. This problem is easily solved by showing a rug (indicators for data points on the x-axis) or a histogram.&lt;/p&gt;
+
+&lt;p&gt;The &lt;strong&gt;assumption of independence&lt;/strong&gt; is the biggest issue with PD plots. It is assumed that the feature(s) for which the partial dependence is computed are not correlated with other features. For example, suppose you want to predict how fast a person walks, given the person’s weight and height. For the partial dependence of one of the features, e.g. height, we assume that the other features (weight) are not correlated with height, which is obviously a false assumption. For the computation of the PDP at a certain height (e.g. 200 cm), we average over the marginal distribution of weight, which might include a weight below 50 kg, which is unrealistic for a 2 meter person. In other words: When the features are correlated, we create new data points in areas of the feature distribution where the actual probability is very low (for example it is unlikely that someone is 2 meters tall but weighs less than 50 kg). One solution to this problem is Accumulated Local Effect plots or short ALE plots that work with the conditional instead of the marginal distribution.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Heterogeneous effects might be hidden&lt;/strong&gt; because PD plots only show the average marginal effects. Suppose that for a feature half your data points have a positive association with the prediction – the larger the feature value the larger the prediction – and the other half has a negative association – the smaller the feature value the larger the prediction. The PD curve could be a horizontal line, since the effects of both halves of the dataset could cancel each other out. You then conclude that the feature has no effect on the prediction. By plotting the individual conditional expectation curves instead of the aggregated line, we can uncover heterogeneous effects.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;note: this post is almost identical to the Molnar’s &lt;a href=&quot;https://christophm.github.io/interpretable-ml-book/pdp.html&quot;&gt;original page&lt;/a&gt;. Refer his page for the examples.&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Ribeiro, Marco Tulio, Sameer Singh, and Carlos Guestrin. “Model-agnostic interpretability of machine learning.” ICML Workshop on Human Interpretability in Machine Learning. (2016). &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Friedman, Jerome H. “Greedy function approximation: A gradient boosting machine.” Annals of statistics (2001): 1189-1232. &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:3&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Zhao, Qingyuan, and Trevor Hastie. “Causal interpretations of black-box models.” Journal of Business &amp;amp; Economic Statistics 39.1 (2021): 272-281. &lt;a href=&quot;#fnref:3&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content><author><name>Wonryong Ryou</name><email>w.r.ryou@gmail.com</email></author><category term="interpretable_machine_learning" /><category term="book_reading" /><category term="partial_dependence_plot" /><summary type="html">Overview After all those interpretable models, we now go forward to model-agnostic methods. One obvious merit among many pros is that model-agnostic methods do not depend on the model type we’re interested in. Ribeiro et al.1 claims that there should be three desirable aspects of a model-agnostic explanation system: Model flexibility: independence on the models. Explanation flexibility: should not be limited to one form of explanation. Representation flexibility: should have various feature representation methods to effectively explain the model in certain domain. Partial Dependence Plot Partial dependce plot using scikit-learn for California Housing Dataset. PDP (or PD plot), for short, is one of the premitive method to see the effects of one or two features, suggested by Friedman2. The partial dependence function for regression is defined as: \[\hat{f}_{x_S} (x_S) = \mathbb{E}_{x_C} \hat{f} (x_S, x_C) = \int \hat{f} (x_S, x_C) dP(x_C) \approx \frac{1}{n} \sum_{i=1}^n \hat{f} (x_S, x^{(i)}_C)\] Here, $x_S$ is the set of features we are interested in (usually one or two), and $x_C$ consists of all other complement features. $\hat{f}$ represents the model. Since the exact expectation is only theoretically calculable, we estimate the marginalised model by Monte Carlo method, as stated in the last term above. An assumption of the PDP is that the features in $C$ are not correlated with the features in S. If this assumption is violated, the averages calculated for the partial dependence plot will include data points that are very unlikely or even impossible. For classification where the machine learning model outputs probabilities, the partial dependence plot displays the probability for a certain class given different values for feature(s) in $S$. An easy way to deal with multiple classes is to draw one line or plot per class. PDP is a global method: The method considers all instances and gives a statement about the global relationship of a feature with the predicted outcome. Categorical features So far, we have only considered numerical features. For categorical features, the partial dependence is very easy to calculate. For each of the categories, we get a PDP estimate by forcing all data instances to have the same category. For example, if we look at the bike rental dataset and are interested in the partial dependence plot for the season, we get 4 numbers, one for each season. To compute the value for “summer”, we replace the season of all data instances with “summer” and average the predictions. Pros and cons Pros The computation of partial dependence plots is intuitive: The partial dependence function at a particular feature value represents the average prediction if we force all data points to assume that feature value. If the feature for which you computed the PDP is not correlated with the other features, then the PDPs perfectly represent how the feature influences the prediction on average. In the uncorrelated case, the interpretation is clear: The partial dependence plot shows how the average prediction in your dataset changes when the $j$-th feature is changed. Note that this merit remains only in the uncorrelated situation. Partial dependence plots are easy to implement. The calculation for the partial dependence plots has a causal interpretation. We intervene on a feature and measure the changes in the predictions. In doing so, we analyze the causal relationship between the feature and the prediction.3 The relationship is causal for the model – because we explicitly model the outcome as a function of the features – but not necessarily for the real world! Cons The realistic maximum number of features in a partial dependence function is two. This is not the fault of PDPs, but of the 2-dimensional representation (paper or screen) and also of our inability to imagine more than 3 dimensions. Some PD plots do not show the feature distribution. Omitting the distribution can be misleading, because you might overinterpret regions with almost no data. This problem is easily solved by showing a rug (indicators for data points on the x-axis) or a histogram. The assumption of independence is the biggest issue with PD plots. It is assumed that the feature(s) for which the partial dependence is computed are not correlated with other features. For example, suppose you want to predict how fast a person walks, given the person’s weight and height. For the partial dependence of one of the features, e.g. height, we assume that the other features (weight) are not correlated with height, which is obviously a false assumption. For the computation of the PDP at a certain height (e.g. 200 cm), we average over the marginal distribution of weight, which might include a weight below 50 kg, which is unrealistic for a 2 meter person. In other words: When the features are correlated, we create new data points in areas of the feature distribution where the actual probability is very low (for example it is unlikely that someone is 2 meters tall but weighs less than 50 kg). One solution to this problem is Accumulated Local Effect plots or short ALE plots that work with the conditional instead of the marginal distribution. Heterogeneous effects might be hidden because PD plots only show the average marginal effects. Suppose that for a feature half your data points have a positive association with the prediction – the larger the feature value the larger the prediction – and the other half has a negative association – the smaller the feature value the larger the prediction. The PD curve could be a horizontal line, since the effects of both halves of the dataset could cancel each other out. You then conclude that the feature has no effect on the prediction. By plotting the individual conditional expectation curves instead of the aggregated line, we can uncover heterogeneous effects. note: this post is almost identical to the Molnar’s original page. Refer his page for the examples. Ribeiro, Marco Tulio, Sameer Singh, and Carlos Guestrin. “Model-agnostic interpretability of machine learning.” ICML Workshop on Human Interpretability in Machine Learning. (2016). &amp;#8617; Friedman, Jerome H. “Greedy function approximation: A gradient boosting machine.” Annals of statistics (2001): 1189-1232. &amp;#8617; Zhao, Qingyuan, and Trevor Hastie. “Causal interpretations of black-box models.” Journal of Business &amp;amp; Economic Statistics 39.1 (2021): 272-281. &amp;#8617;</summary></entry><entry><title type="html">Interpretable Machine Learning - Interpretable Models - (3) RuleFit</title><link href="/2021/07/03/interpretable-ml-03.html" rel="alternate" type="text/html" title="Interpretable Machine Learning - Interpretable Models - (3) RuleFit" /><published>2021-07-03T00:00:00-07:00</published><updated>2021-07-03T00:00:00-07:00</updated><id>/2021/07/03/interpretable-ml-03</id><content type="html" xml:base="/2021/07/03/interpretable-ml-03.html">&lt;p&gt;RuleFit&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; is the extension of &lt;a href=&quot;https://christophm.github.io/interpretable-ml-book/rules.html&quot;&gt;decision rules&lt;/a&gt;, which can be easily summarised: classifying instances by several &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IF-THEN&lt;/code&gt; statements. We will skip the introduction for the decision rules, so please refer Molnar’s page if you’re interested in the model. Decision rules technique has their own distinct strategies to enhance interpretability and accuracy, so would worth take a look for the reference before we go into RuleFit.&lt;/p&gt;
+
+&lt;h2 id=&quot;rulefit&quot;&gt;RuleFit&lt;/h2&gt;
+
+&lt;p&gt;RuleFit is a quite recent approach to make the model as simple as linear regression, but able to capture the interactions between the variables at the same time. The core ideas of RuleFit are &lt;em&gt;to use the decision rules taken from the decision trees as features&lt;/em&gt; and &lt;em&gt;to fit a sparse linear model&lt;/em&gt; from them. Not tangible yet? Me neither. Let’s drift into the details.&lt;/p&gt;
+
+&lt;h2 id=&quot;theory-behind&quot;&gt;Theory behind&lt;/h2&gt;
+
+&lt;p&gt;The model consists of two parts: (1) the rules from decision trees, and (2) a linear model taking both inputs and the rules as new features. You see, “RuleFit” is named after so obvious reasons.&lt;/p&gt;
+
+&lt;h3 id=&quot;1-rule-generation&quot;&gt;1. Rule generation&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Rules&lt;/em&gt; in RuleFit has the same &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IF-THEN&lt;/code&gt; format. Any route taken from a decision tree can be interpreted as a decision rule with conjuncted predicates. The original paper suggests to build several decision trees by gradient boosting and aggregate those by any tree ensemble algorithm, e.g., bagging, random forest, AdaBoost, etc. This can be formulated:&lt;/p&gt;
+
+\[f(X) = a_0 + \sum_{m=1}^{M} a_m f_m (X),\]
+
+&lt;p&gt;where $M$ is the number of trees, and $f_m(X)$ is the prediction of the $m$-th tree of the instance $X$. Each rule $r_m (X)$ takes the form of:&lt;/p&gt;
+
+\[r_m (X) = \prod_{j \in T_m} I_{\{ x_j \in s_{jm} \}},\]
+
+&lt;p&gt;where $T_m$ is the subset of features used in $m$-th tree and $s_{jm}$ is the criterion of each feature used in the rule. After all, there will be $K$ rules built by the ensemble of $M$ trees with $t_m$ terminal nodes:&lt;/p&gt;
+
+\[K = \sum_{m=1}^M 2(t_m - 1).\]
+
+&lt;p&gt;Note that those rules can have arbitrary lengths (suggested by authors by training the random depth decision trees), and interpretable as the binary features from complex interactions between the features.&lt;/p&gt;
+
+&lt;h3 id=&quot;2-sparse-linear-model&quot;&gt;2. Sparse linear model&lt;/h3&gt;
+
+&lt;p&gt;Since there will be so many rules obtained from the decision trees, we need to winsorise the original features so that they are more robust against outliers:&lt;/p&gt;
+
+\[l^*_j (x_j) = \min (\delta^+_j, \max(\delta^-_j, x_j)),\]
+
+&lt;p&gt;where $\delta^+$ and $\delta^-$ are $\delta$-quantiles of the variable. As a rule of thumb, we can set the $\delta=0.025$. After then, we need to normalise the features so that they have the same prior importance as a typical decision rule:&lt;/p&gt;
+
+\[l_j (x_j) = 0.4 \cdot \frac{l^*_j (x_j)}{std(l^*_j (x_j))}\]
+
+&lt;p&gt;Here, 0.4 is the average standard deviation of rules with a uniform support distribution of $s_k \sim U(0,1)$. Here, &lt;em&gt;support&lt;/em&gt; $s_k$ is the portion of the data covered by the rule. Using all the winsorised features and rules, RuleFit trains the sparse linear model with the following format:&lt;/p&gt;
+
+\[\hat{f}(x) = \hat\beta_0 + \sum_{k=1}^K \hat\alpha_k r_k (x) + \sum_{j=1}^p \hat\beta_j l_j(x_j)\]
+
+\[(\{\hat\alpha\}_1^K, \{\hat\beta\}_1^p) = \arg\min \sum_{i=1}^n \mathcal{L}(y^{(i)}, f(x^{(i)})) + \lambda \left( \| \alpha \|_1 + \| \beta \|_1 \right)\]
+
+&lt;h3 id=&quot;optional-feature-importance&quot;&gt;(optional) Feature importance&lt;/h3&gt;
+
+&lt;p&gt;Recap the feature importance of the linear model is defined as the absolute weight divided by the standard deviation of the variable. The authors defined the importance of each rule as the following:&lt;/p&gt;
+
+\[I_i = \begin{cases}
+|\hat{\beta}_i| \cdot std(l_i (x_i)) &amp;amp; \text{if } x_i \text{ is a standardised predictor} \\
+|\hat\alpha_i| \cdot \sqrt{s_i (1-s_i)} &amp;amp; \text{if } x_i \text{ is a decision rule term}
+\end{cases}\]
+
+&lt;p&gt;Note that a single feature can appear not only in the original set of features, but also in several other rules. The importance $J_j (x)$ of a feature can be measured for each individual prediction:&lt;/p&gt;
+
+\[J_j (x) = I_j(x) + \sum_{x_j \in r_k} I_k (x) / m_k\]
+
+&lt;p&gt;where $m_k$ is the number of features in the rule $r_k$. Summing up all the feature importances results in the global feature importance.&lt;/p&gt;
+
+&lt;h2 id=&quot;wrap-up&quot;&gt;Wrap up&lt;/h2&gt;
+
+&lt;p&gt;RuleFit is rather a simple method combining the decision trees and linear regression. However, the power of the model is quite impressive: it is able to do both classificiation and regression, and handle the variables’ interactions. Intrepretation of the model is straightforward, as its two ancestors do.&lt;/p&gt;
+
+&lt;p&gt;The drawbacks, however, exist. There might be too many rules created and allocated with non-zero weights, which causes degrading interpretability as the number of features increases. Also, this model inherits not only the merits of linear models, but the bad things as well - weight interpretation is not always intuitive. Think of there are many overlapping rules but having similar importances. This model is claimed to perform as good as random forest does (according to authors), but has its own limitation.&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Friedman, Jerome H., and Bogdan E. Popescu. “Predictive learning via rule ensembles.” The Annals of Applied Statistics 2.3 (2008): 916-954. &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content><author><name>Wonryong Ryou</name><email>w.r.ryou@gmail.com</email></author><category term="interpretable_machine_learning" /><category term="book_reading" /><category term="rulefit" /><summary type="html">RuleFit1 is the extension of decision rules, which can be easily summarised: classifying instances by several IF-THEN statements. We will skip the introduction for the decision rules, so please refer Molnar’s page if you’re interested in the model. Decision rules technique has their own distinct strategies to enhance interpretability and accuracy, so would worth take a look for the reference before we go into RuleFit. RuleFit RuleFit is a quite recent approach to make the model as simple as linear regression, but able to capture the interactions between the variables at the same time. The core ideas of RuleFit are to use the decision rules taken from the decision trees as features and to fit a sparse linear model from them. Not tangible yet? Me neither. Let’s drift into the details. Theory behind The model consists of two parts: (1) the rules from decision trees, and (2) a linear model taking both inputs and the rules as new features. You see, “RuleFit” is named after so obvious reasons. 1. Rule generation Rules in RuleFit has the same IF-THEN format. Any route taken from a decision tree can be interpreted as a decision rule with conjuncted predicates. The original paper suggests to build several decision trees by gradient boosting and aggregate those by any tree ensemble algorithm, e.g., bagging, random forest, AdaBoost, etc. This can be formulated: \[f(X) = a_0 + \sum_{m=1}^{M} a_m f_m (X),\] where $M$ is the number of trees, and $f_m(X)$ is the prediction of the $m$-th tree of the instance $X$. Each rule $r_m (X)$ takes the form of: \[r_m (X) = \prod_{j \in T_m} I_{\{ x_j \in s_{jm} \}},\] where $T_m$ is the subset of features used in $m$-th tree and $s_{jm}$ is the criterion of each feature used in the rule. After all, there will be $K$ rules built by the ensemble of $M$ trees with $t_m$ terminal nodes: \[K = \sum_{m=1}^M 2(t_m - 1).\] Note that those rules can have arbitrary lengths (suggested by authors by training the random depth decision trees), and interpretable as the binary features from complex interactions between the features. 2. Sparse linear model Since there will be so many rules obtained from the decision trees, we need to winsorise the original features so that they are more robust against outliers: \[l^*_j (x_j) = \min (\delta^+_j, \max(\delta^-_j, x_j)),\] where $\delta^+$ and $\delta^-$ are $\delta$-quantiles of the variable. As a rule of thumb, we can set the $\delta=0.025$. After then, we need to normalise the features so that they have the same prior importance as a typical decision rule: \[l_j (x_j) = 0.4 \cdot \frac{l^*_j (x_j)}{std(l^*_j (x_j))}\] Here, 0.4 is the average standard deviation of rules with a uniform support distribution of $s_k \sim U(0,1)$. Here, support $s_k$ is the portion of the data covered by the rule. Using all the winsorised features and rules, RuleFit trains the sparse linear model with the following format: \[\hat{f}(x) = \hat\beta_0 + \sum_{k=1}^K \hat\alpha_k r_k (x) + \sum_{j=1}^p \hat\beta_j l_j(x_j)\] \[(\{\hat\alpha\}_1^K, \{\hat\beta\}_1^p) = \arg\min \sum_{i=1}^n \mathcal{L}(y^{(i)}, f(x^{(i)})) + \lambda \left( \| \alpha \|_1 + \| \beta \|_1 \right)\] (optional) Feature importance Recap the feature importance of the linear model is defined as the absolute weight divided by the standard deviation of the variable. The authors defined the importance of each rule as the following: \[I_i = \begin{cases} |\hat{\beta}_i| \cdot std(l_i (x_i)) &amp;amp; \text{if } x_i \text{ is a standardised predictor} \\ |\hat\alpha_i| \cdot \sqrt{s_i (1-s_i)} &amp;amp; \text{if } x_i \text{ is a decision rule term} \end{cases}\] Note that a single feature can appear not only in the original set of features, but also in several other rules. The importance $J_j (x)$ of a feature can be measured for each individual prediction: \[J_j (x) = I_j(x) + \sum_{x_j \in r_k} I_k (x) / m_k\] where $m_k$ is the number of features in the rule $r_k$. Summing up all the feature importances results in the global feature importance. Wrap up RuleFit is rather a simple method combining the decision trees and linear regression. However, the power of the model is quite impressive: it is able to do both classificiation and regression, and handle the variables’ interactions. Intrepretation of the model is straightforward, as its two ancestors do. The drawbacks, however, exist. There might be too many rules created and allocated with non-zero weights, which causes degrading interpretability as the number of features increases. Also, this model inherits not only the merits of linear models, but the bad things as well - weight interpretation is not always intuitive. Think of there are many overlapping rules but having similar importances. This model is claimed to perform as good as random forest does (according to authors), but has its own limitation. Friedman, Jerome H., and Bogdan E. Popescu. “Predictive learning via rule ensembles.” The Annals of Applied Statistics 2.3 (2008): 916-954. &amp;#8617;</summary></entry><entry><title type="html">Interpretable Machine Learning - Interpretable Models - (2) Decision Tree</title><link href="/2021/06/19/interpretable-ml-02.html" rel="alternate" type="text/html" title="Interpretable Machine Learning - Interpretable Models - (2) Decision Tree" /><published>2021-06-19T00:00:00-07:00</published><updated>2021-06-19T00:00:00-07:00</updated><id>/2021/06/19/interpretable-ml-02</id><content type="html" xml:base="/2021/06/19/interpretable-ml-02.html">&lt;p&gt;Logistic regression and GLM are somehow direct extension from the linear regression
+so I skip the post about those. Instead, in this post, we will take a look for
+another simple yet powerful method, &lt;em&gt;decision tree&lt;/em&gt;. After we go through the basic
+of the decision tree, we will also take a look for the paper named “Neural-Backed 
+Decision Trees”, which proposes the hybrid approach of decision tree and neural
+network.&lt;/p&gt;
+
+&lt;h2 id=&quot;decision-trees&quot;&gt;Decision trees&lt;/h2&gt;
+
+&lt;p&gt;The name itself of decision tree says quite much about the algorithm. Decision 
+tree consists of a tree-like decision process and let the data follow the distinct
+route from the root to the terminal/leaf node. Each terminal node is classified
+as a single label.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/2021-06-19-dt.png&quot; alt=&quot;decision tree&quot; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;An example decision tree shape. Each intermediate node becomes the binary test statement to split the inputs into two mutually-excluive groups. Original image from &lt;a href=&quot;https://christophm.github.io/interpretable-ml-book/tree.html&quot;&gt;Molnar’s page&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;This is the formal statement of inference in the decision tree.&lt;/p&gt;
+
+\[\hat{y} = \hat{f}(x) = \sum^{M}_{m=1} c_m I_{ \{ x \in R_m \} }\]
+
+&lt;p&gt;As mentioned earlier, each instance falls in to the unique leaf node($R_m$) with
+the class label (or the average value) of $c_m$. 
+There are several algorithms to build a tree on a dataset,
+but let’s focus on CART (Classification and Regression Trees) algorithm in this
+post.&lt;/p&gt;
+
+&lt;h3 id=&quot;building-algorithm--cart&quot;&gt;Building algorithm – CART&lt;/h3&gt;
+
+&lt;p&gt;CART decides how to split the data based on the &lt;a href=&quot;https://en.wikipedia.org/wiki/Decision_tree_learning#Gini_impurity&quot;&gt;Gini impurity&lt;/a&gt;.
+Gini impurity given set is calculated by the sum of the multiplication of &lt;em&gt;correctly classified 
+probability&lt;/em&gt; ($p_i$) and &lt;em&gt;wrongly classified probability&lt;/em&gt; ($\sum_{k \neq i} p_k = 1 - p_i$).&lt;/p&gt;
+
+\[I_G(p) = \sum^J_{i=1} p_i \left( \sum^J_{k=1} p_k \right) = \sum^J_{i=1} p_i (1-p_i) = 1 - \sum^J_{i=1} p^2_i\]
+
+&lt;p&gt;Based on this measure, CART splits the given data by minimising the impurity
+of the resulting nodes. This applies both for the continuous and categorical 
+features.&lt;/p&gt;
+
+&lt;h3 id=&quot;interpretation&quot;&gt;Interpretation&lt;/h3&gt;
+
+&lt;p&gt;Interpretation of the decision tree is pretty simple: you only need to follow 
+the conditions written on the intermediate nodes and make inference by the
+representative label of the terminal node where the instance eventually placed.
+Decision tree is the most human-friendly method to build the interpretable model
+and relatively fast to create the model.&lt;/p&gt;
+
+&lt;p&gt;In addition to the vanilla decision tree, we can extend the concept to &lt;em&gt;random
+forest&lt;/em&gt; technique. This is out of scope of this post, but keep in mind that the
+extended method is the ensemble method with several decision trees on the subset
+of the dataset.&lt;/p&gt;
+
+&lt;h3 id=&quot;pros-and-cons&quot;&gt;Pros and cons&lt;/h3&gt;
+
+&lt;p&gt;Here goes the list of the pros of decision trees:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Good for capturing interactions&lt;/strong&gt; between features in the data. This is not
+quantitatibly done but by the interpreter’s signts.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;So easy interpretation&lt;/strong&gt; even on the multidimesional data.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Has natural visualisation&lt;/strong&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Creates good explanations&lt;/strong&gt;. Following the route itself already produces 
+natural explanations for the inference.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;No need of transformation&lt;/strong&gt; of the features unlike the linear regression.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;and cons:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Fails to deal with linear relationships&lt;/strong&gt;. Decision trees only split the data
+based on the step function. This eventually results in the &lt;strong&gt;lack of smoothness&lt;/strong&gt;
+in the infefence. This can be alleviated by using &lt;em&gt;oblique&lt;/em&gt; decision trees, the
+structure using non-orthogonal decision boundaries.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Unstable structure&lt;/strong&gt;. Even the slightest change in the training dataset can 
+devastating change in the resulting tree. For the robust decision trees, check 
+this out&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;The number of terminal nodes increases quickly with depth&lt;/strong&gt;. The maximum number
+of leaves increases exponentially as the depth grows.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;neural-backed-decision-trees&quot;&gt;Neural-backed decision trees&lt;/h2&gt;
+
+&lt;p&gt;As briefly shown before, decision trees are easy to build and easy to interpret,
+but certainly have their limitations. Wan et al.&lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt; wanted to maintain the good
+things from the decision trees for the concurrent models, so they designed
+NBDT; the hybrid approach of neural networks and decision trees to boost the 
+interpretability of the high-end classifiers. Their intuitition is:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Neural-Backed Decision Trees (NBDTs) replace a network’s final linear layer with a decision tree.
+Unlike classical decision trees or many hierarchical classifiers, NBDTs use path probabilities for
+inference (Sec 3.1) to tolerate highly-uncertain intermediate decisions, build a hierarchy from 
+pretrained model weights (Sec 3.2 &amp;amp; 3.3) to lessen overfitting, and train with a hierarchical loss
+(Sec 3.4) to significantly better learn high-level decisions (e.g., Animal vs. Vehicle).&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;inference&quot;&gt;Inference&lt;/h3&gt;
+
+&lt;p&gt;Let $W \in \mathbb{R}^{d \times k}$ be the weight matrix of the final fully-connected 
+layer of the pre-trained neural network. Denote the row vector of $W$ as $w_i$.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Seed oblique decision rule weights with neural network weights.&lt;/strong&gt; Fix the 
+structure of the decision tree shape with the complete binary tree, and allocate
+the row vectors $w_i$ to each leaf node. For the intermediate nodes, set with
+the average weight vector of all the leaf nodes in the subtree rooted by that
+node, i.e., \(w'_i = \frac{1}{|L(i)|} \sum_{j \in L(i)} w_j\)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Compute node probabilities.&lt;/strong&gt; For each sample $x$, node $i$, and its child $j \in C(i)$,
+\(p(j|i) = \texttt{Softmax}(n_i^{\intercal} x) [j], \text{ where } n_i = (w_j^{\intercal} x)_{j \in C(i)}.\)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Pick a leaf using path probabilities.&lt;/strong&gt; Denote the next traversal node of $i$ as $C_k(i)$ on the existing path $P_k$.
+Then $C_k(i) \in P_k \cap C(i)$. The probability of the leaf node labeled $k$ is:
+\(p(k) = \prod_{i \in P_k} p(C_k(i) | i).\)
+After that, the final class prediction $\hat{k}$ is calculated as the argmax of
+all the leaf node probabilities.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The authors claim that this approach is the “soft” decision process as all the
+leaf nodes are considered in probabilistic way, and more robust to the early
+mistakes happening on the shallow nodes.&lt;/p&gt;
+
+&lt;h3 id=&quot;building-induced-hierarchies&quot;&gt;Building induced hierarchies&lt;/h3&gt;
+
+&lt;p&gt;After it, the author takes the strategy to build hierarchy structure by clustering
+algorithm based on the normalised assigned weights, $w_k / |w_k|_2$. The implementation
+shows they applied k-nn clustering for this.&lt;/p&gt;
+
+&lt;h3 id=&quot;labeling-decision-nodes-with-wordnet&quot;&gt;Labeling decision nodes with WordNet&lt;/h3&gt;
+
+&lt;p&gt;Then they labeled each intermediate nodes by finding the common ancestor of two
+nodes in the WordNet. This is for semantically plausible purpose for the interpretation.&lt;/p&gt;
+
+&lt;h3 id=&quot;fine-tuning-with-tree-supervision-loss&quot;&gt;Fine-tuning with tree supervision loss&lt;/h3&gt;
+
+&lt;p&gt;They suggested a new loss named tree supervision loss by combining the original
+cross entropy loss for the classification and the additional term of cross entropy
+on the $p(k)$. The weights for each term changes along the training stage.&lt;/p&gt;
+
+&lt;h3 id=&quot;results&quot;&gt;Results&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/2021-06-19-ambiguous.png&quot; alt=&quot;ambiguous images&quot; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Types of ambiguous labels. NBDT explains which node is ambiguous and not.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Overally, NBDT shows impressive results. They showed that with the very slight
+drop of accuracy, NBDT produces much reasonable explanations for the predictions.
+Since, as you know, there is no way to quantitatively measure the explanability,
+the authors performed several surveys to human pool, including above interesting
+experiments.&lt;/p&gt;
+
+&lt;h2 id=&quot;wrap-up&quot;&gt;Wrap up&lt;/h2&gt;
+
+&lt;p&gt;We took a look for the decision trees and their modern application, NBDT. This
+simple yet powerful method is still widely used in the field, so worth be
+acknowledged. As the authors of NBDT confessed, the method has a weak chain between
+the induced hierarchy and labeling it. It would be nice further research to make
+logical grips on that ambiguous part to make NBDT better.&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Chen, Hongge, et al. “Robust decision trees against adversarial examples.” International Conference on Machine Learning. PMLR, 2019. &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Wan, Alvin, et al. “NBDT: neural-backed decision trees.” arXiv preprint arXiv:2004.00221 (2020). &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content><author><name>Wonryong Ryou</name><email>w.r.ryou@gmail.com</email></author><category term="interpretable_machine_learning" /><category term="book_reading" /><category term="decision_tree" /><category term="neural_backed_decision_tree" /><summary type="html">Logistic regression and GLM are somehow direct extension from the linear regression so I skip the post about those. Instead, in this post, we will take a look for another simple yet powerful method, decision tree. After we go through the basic of the decision tree, we will also take a look for the paper named “Neural-Backed Decision Trees”, which proposes the hybrid approach of decision tree and neural network. Decision trees The name itself of decision tree says quite much about the algorithm. Decision tree consists of a tree-like decision process and let the data follow the distinct route from the root to the terminal/leaf node. Each terminal node is classified as a single label. An example decision tree shape. Each intermediate node becomes the binary test statement to split the inputs into two mutually-excluive groups. Original image from Molnar’s page. This is the formal statement of inference in the decision tree. \[\hat{y} = \hat{f}(x) = \sum^{M}_{m=1} c_m I_{ \{ x \in R_m \} }\] As mentioned earlier, each instance falls in to the unique leaf node($R_m$) with the class label (or the average value) of $c_m$. There are several algorithms to build a tree on a dataset, but let’s focus on CART (Classification and Regression Trees) algorithm in this post. Building algorithm – CART CART decides how to split the data based on the Gini impurity. Gini impurity given set is calculated by the sum of the multiplication of correctly classified probability ($p_i$) and wrongly classified probability ($\sum_{k \neq i} p_k = 1 - p_i$). \[I_G(p) = \sum^J_{i=1} p_i \left( \sum^J_{k=1} p_k \right) = \sum^J_{i=1} p_i (1-p_i) = 1 - \sum^J_{i=1} p^2_i\] Based on this measure, CART splits the given data by minimising the impurity of the resulting nodes. This applies both for the continuous and categorical features. Interpretation Interpretation of the decision tree is pretty simple: you only need to follow the conditions written on the intermediate nodes and make inference by the representative label of the terminal node where the instance eventually placed. Decision tree is the most human-friendly method to build the interpretable model and relatively fast to create the model. In addition to the vanilla decision tree, we can extend the concept to random forest technique. This is out of scope of this post, but keep in mind that the extended method is the ensemble method with several decision trees on the subset of the dataset. Pros and cons Here goes the list of the pros of decision trees: Good for capturing interactions between features in the data. This is not quantitatibly done but by the interpreter’s signts. So easy interpretation even on the multidimesional data. Has natural visualisation. Creates good explanations. Following the route itself already produces natural explanations for the inference. No need of transformation of the features unlike the linear regression. and cons: Fails to deal with linear relationships. Decision trees only split the data based on the step function. This eventually results in the lack of smoothness in the infefence. This can be alleviated by using oblique decision trees, the structure using non-orthogonal decision boundaries. Unstable structure. Even the slightest change in the training dataset can devastating change in the resulting tree. For the robust decision trees, check this out1. The number of terminal nodes increases quickly with depth. The maximum number of leaves increases exponentially as the depth grows. Neural-backed decision trees As briefly shown before, decision trees are easy to build and easy to interpret, but certainly have their limitations. Wan et al.2 wanted to maintain the good things from the decision trees for the concurrent models, so they designed NBDT; the hybrid approach of neural networks and decision trees to boost the interpretability of the high-end classifiers. Their intuitition is: Neural-Backed Decision Trees (NBDTs) replace a network’s final linear layer with a decision tree. Unlike classical decision trees or many hierarchical classifiers, NBDTs use path probabilities for inference (Sec 3.1) to tolerate highly-uncertain intermediate decisions, build a hierarchy from pretrained model weights (Sec 3.2 &amp;amp; 3.3) to lessen overfitting, and train with a hierarchical loss (Sec 3.4) to significantly better learn high-level decisions (e.g., Animal vs. Vehicle). Inference Let $W \in \mathbb{R}^{d \times k}$ be the weight matrix of the final fully-connected layer of the pre-trained neural network. Denote the row vector of $W$ as $w_i$. Seed oblique decision rule weights with neural network weights. Fix the structure of the decision tree shape with the complete binary tree, and allocate the row vectors $w_i$ to each leaf node. For the intermediate nodes, set with the average weight vector of all the leaf nodes in the subtree rooted by that node, i.e., \(w'_i = \frac{1}{|L(i)|} \sum_{j \in L(i)} w_j\) Compute node probabilities. For each sample $x$, node $i$, and its child $j \in C(i)$, \(p(j|i) = \texttt{Softmax}(n_i^{\intercal} x) [j], \text{ where } n_i = (w_j^{\intercal} x)_{j \in C(i)}.\) Pick a leaf using path probabilities. Denote the next traversal node of $i$ as $C_k(i)$ on the existing path $P_k$. Then $C_k(i) \in P_k \cap C(i)$. The probability of the leaf node labeled $k$ is: \(p(k) = \prod_{i \in P_k} p(C_k(i) | i).\) After that, the final class prediction $\hat{k}$ is calculated as the argmax of all the leaf node probabilities. The authors claim that this approach is the “soft” decision process as all the leaf nodes are considered in probabilistic way, and more robust to the early mistakes happening on the shallow nodes. Building induced hierarchies After it, the author takes the strategy to build hierarchy structure by clustering algorithm based on the normalised assigned weights, $w_k / |w_k|_2$. The implementation shows they applied k-nn clustering for this. Labeling decision nodes with WordNet Then they labeled each intermediate nodes by finding the common ancestor of two nodes in the WordNet. This is for semantically plausible purpose for the interpretation. Fine-tuning with tree supervision loss They suggested a new loss named tree supervision loss by combining the original cross entropy loss for the classification and the additional term of cross entropy on the $p(k)$. The weights for each term changes along the training stage. Results Types of ambiguous labels. NBDT explains which node is ambiguous and not. Overally, NBDT shows impressive results. They showed that with the very slight drop of accuracy, NBDT produces much reasonable explanations for the predictions. Since, as you know, there is no way to quantitatively measure the explanability, the authors performed several surveys to human pool, including above interesting experiments. Wrap up We took a look for the decision trees and their modern application, NBDT. This simple yet powerful method is still widely used in the field, so worth be acknowledged. As the authors of NBDT confessed, the method has a weak chain between the induced hierarchy and labeling it. It would be nice further research to make logical grips on that ambiguous part to make NBDT better. Chen, Hongge, et al. “Robust decision trees against adversarial examples.” International Conference on Machine Learning. PMLR, 2019. &amp;#8617; Wan, Alvin, et al. “NBDT: neural-backed decision trees.” arXiv preprint arXiv:2004.00221 (2020). &amp;#8617;</summary></entry><entry><title type="html">Interpretable Machine Learning - Interpretable Models - (1) Linear Regression</title><link href="/2021/05/15/interpretable-ml-01.html" rel="alternate" type="text/html" title="Interpretable Machine Learning - Interpretable Models - (1) Linear Regression" /><published>2021-05-15T00:00:00-07:00</published><updated>2021-05-15T00:00:00-07:00</updated><id>/2021/05/15/interpretable-ml-01</id><content type="html" xml:base="/2021/05/15/interpretable-ml-01.html">&lt;p&gt;Here I skip the definitions and some qualitative concerns for the interpretability
+and move on to the interpretable models from Molnar’s reference&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;. The models introduced in this post are
+more like statistically founded approaches, which means they might not be able to
+applicable to complex tasks such as speech recognition or object detection. 
+Nevertheless, first things first. Here I introduce 6+ ‘classical’ models for 
+&lt;em&gt;classification&lt;/em&gt; and &lt;em&gt;regression&lt;/em&gt;.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;&lt;strong&gt;Algorithm&lt;/strong&gt;&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;strong&gt;Linear&lt;/strong&gt;&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;strong&gt;Monotone&lt;/strong&gt;&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;strong&gt;Interaction&lt;/strong&gt;&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;strong&gt;Classification&lt;/strong&gt;&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;strong&gt;Regression&lt;/strong&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;a href=&quot;#linear-regression&quot;&gt;Linear regression&lt;/a&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;X&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;X&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;a href=&quot;#&quot;&gt;Logistic regression&lt;/a&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;X&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;X&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;X&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;a href=&quot;/2021/06/19/interpretable-ml-02.html&quot;&gt;Decision trees&lt;/a&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;X&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;?&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;a href=&quot;#rulefit&quot;&gt;RuleFit&lt;/a&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;X&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;a href=&quot;#naive-bayes&quot;&gt;Naive Bayes&lt;/a&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;X&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;X&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;X&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;a href=&quot;#k-nearest-neighbours&quot;&gt;k-NN&lt;/a&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;X&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;X&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;X&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;O&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;A table from &lt;em&gt;Interpretable Machine Learning&lt;/em&gt;, Molnar(2021)&lt;sup id=&quot;fnref:1:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Here, each criterion stands for:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Linear: whether the association between features and target is linear&lt;/li&gt;
+  &lt;li&gt;Monontone: whether the change in the feature space always monotonically affects the target&lt;/li&gt;
+  &lt;li&gt;Interaction: whether the model innately consists of interactive features&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;linear-regression&quot;&gt;Linear regression&lt;/h2&gt;
+
+&lt;p&gt;The structure genrerally follows the &lt;a href=&quot;https://christophm.github.io/interpretable-ml-book/limo.html&quot;&gt;Molnar’s page&lt;/a&gt;,
+but I added some insights from the ETHZ Computational Statistics’ lecture notes.&lt;/p&gt;
+
+&lt;h3 id=&quot;formalisation&quot;&gt;Formalisation&lt;/h3&gt;
+
+&lt;p&gt;The classic. Linear regression is the simplest model which predicts the target
+as a weighted sum of the feature inputs. Let’s do a quick recap of the process.
+Denote the target values $\mathbf{y} \in \mathbb{R}^n$ and the features 
+$\mathbf{X} \in \mathbb{R}^{n \times p}$ including interceptions. With the 
+intractable noise $\mathbf{\epsilon}$, we assume the latent relationship:&lt;/p&gt;
+
+\[y_i = \beta_1 x_{i,1} + \cdots + \beta_p x_{i,p} + \epsilon_i,\ \forall i \in [n]\]
+
+&lt;p&gt;or&lt;/p&gt;
+
+\[\mathbf{y} = \mathbf{X} \mathbf{\beta} + \mathbf{\epsilon}\]
+
+&lt;p&gt;and aproximate the weight vector $\mathbf{\beta}$ with:&lt;/p&gt;
+
+\[\hat{\beta} = \arg\min_{\mathbf{b}} \sum_{i=1}^{n} (y_i - \mathbf{x}_i^\intercal \mathbf{b})^2 
+= \arg\min_{\mathbf{b}} (\mathbf{Y} - \mathbf{X} \mathbf{b})^\intercal (\mathbf{Y} - \mathbf{X} \mathbf{b}) 
+= (\mathbf{X}^\intercal \mathbf{X})^{-1} \mathbf{X}^\intercal \mathbf{Y}\]
+
+&lt;p&gt;Pretty straightforward, isn’t it? Also, if we assume all the noise are drawn from
+the i.i.d. normal distribution, i.e., $\epsilon_i \sim \mathcal{N}(0, \sigma^2)$, then
+we also can approximate $\sigma^2$ with&lt;/p&gt;
+
+\[\hat{\sigma^2} = \frac{1}{n-p} \sum_{i=1}^n (y_i - \mathbf{x}_i^\intercal \hat{\beta})^2 
+\sim \frac{\sigma^2}{n-p} \chi^2_{n-p}\]
+
+&lt;p&gt;and can derive the distribution of $\hat{\beta}$:&lt;/p&gt;
+
+\[\hat{\beta} \sim \mathcal{N}_p ( \mathbf{\beta}, \sigma^2 (\mathbf{X}^\intercal \mathbf{X})^{-1})\]
+
+&lt;p&gt;Note that linear regression looks elegant, but it bases heavy assumptions for
+the data which are listed below:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;em&gt;Linearity&lt;/em&gt; between the features and the target.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Normality&lt;/em&gt; of the features for the confidence interval of each weight (which will be shown later)&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Homoscedasticity (constant variance)&lt;/em&gt; of the error terms.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Independence&lt;/em&gt; among the data points.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Fixed features&lt;/em&gt;, which means the data points are not variables but given constants.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Absence of multicollinearity&lt;/em&gt;, which means the independence among the features.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;model-selections&quot;&gt;Model selections&lt;/h3&gt;
+
+&lt;p&gt;If there are too many features, we might want to reduce the dimension of the feature
+spaces while we don’t lose the predictive power or any other performance measure. 
+There are majorly three ways to do so: subset selection, shrinkage, and
+dimension reduction (i.e., principal component analysis). The last one is hard to
+interpret, so let’s concentrate on the rests.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Subset selection&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;When we want select only $q$ features from the data, the best way to do this is 
+to consider $\binom{p}{q}$ models and choose the “best” model among those. However,
+this approach is computationally heavy, so we often do the greedy approaches
+in either forward or backward direction to choose the models among the limited scopes.
+This field is not dead yet - you can see the presentation pdf for the seminar
+handled this topic in &lt;a href=&quot;/assets/images/07_11_SubmodularMeetsSpectral.pdf&quot;&gt;here&lt;/a&gt;, if you’re interested in :)&lt;/p&gt;
+
+&lt;p&gt;Here, we often choose the criteria of the “best” model from &lt;a href=&quot;https://en.wikipedia.org/wiki/Akaike_information_criterion&quot;&gt;Akaike Information Criterion (AIC)&lt;/a&gt;,
+&lt;a href=&quot;https://en.wikipedia.org/wiki/Bayesian_information_criterion&quot;&gt;Bayesian Information Criterion&lt;/a&gt;, or adjusted R-squared, which will be explained later.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Shrinkage&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Two veins of the shrinkage methods are prevailing: &lt;em&gt;Lasso&lt;/em&gt; and &lt;em&gt;Ridge&lt;/em&gt;. Those
+are often called as &lt;em&gt;regularisation&lt;/em&gt; techniques as well, as they regularise the
+L1-norm and L2-norm of the weights $\beta$, respectively. With attaching the
+regularising term on the objective function with the scale parameter $\lambda$,
+Ridge regression on the standardised data can be explicitly written:&lt;/p&gt;
+
+\[\hat\beta^{Ridge} = (\mathbf{X}^\intercal \mathbf{X} + \lambda \mathbf{I})^{-1} \mathbf{X}^\intercal \mathbf{y},\]
+
+&lt;p&gt;but Lasso only have numerical solutions via least angle regression (iterative algorithm) or so.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/2021-05-15-lasso.png&quot; alt=&quot;lasso&quot; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Lasso regression’s feature weights vs $\lambda$. Note that the more weights goes zero as $\lambda$ grows.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The funny thing here is that while Ridge still shows the continuous weights among
+all the features, Lasso regression innately “selects” the important features when
+the regularisation parameter $\lambda$ is big enough. From this property, we can
+shrink the model size based on the importance of each feature.&lt;/p&gt;
+
+&lt;h3 id=&quot;interpretation&quot;&gt;Interpretation&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Weights $\beta$&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;We can interpret the results of the linear regression: for $k$-th feature, $x_{\cdot, k}$, 
+$\hat\beta_k$ is the expectation of the result gap of the two inputs share all the
+features but differ in $k$-th with 1. You can derive it easily by the linearity.
+This interpretation holds for both numerical features and categorical features.&lt;/p&gt;
+
+&lt;p&gt;Also, the &lt;em&gt;feature importance&lt;/em&gt; of $x_k$ is measured by the absolute value of the
+t-statistic:&lt;/p&gt;
+
+\[t_{\hat\beta_k} = \frac{\hat\beta_k}{se(\hat\beta_k)},\]
+
+&lt;p&gt;where $se$ is the standard error.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;R-squared measurement&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;R-squared or $R^2$ is the measurement represents the portion of variance in $y$
+that is explained by the linear regression model. It is defined as:&lt;/p&gt;
+
+\[R^2 = 1 - \frac{RSS}{TSS},\]
+
+&lt;p&gt;where&lt;/p&gt;
+
+\[RSS = \sum_{i-1}^n (y_i - \hat{y}_i)^2,\ TSS = \sum_{i=1}^n (y_i - \bar{y}_i)^2\]
+
+&lt;p&gt;RSS stands for the &lt;em&gt;residual sum of squares&lt;/em&gt; and TSS is for &lt;em&gt;total sum of squares&lt;/em&gt;.
+Each of term can be interpreted as following: $RSS/(n-1)$ is the sample variance
+of the residuals $\epsilon_1, \cdots \epsilon_n$, and $TSS/(n-1)$ is the sample
+variance of the data labels $y_1, \cdots y_n$. Hence, $RSS/TSS$ should be low
+if the model works well, which directly implies that the higher $R^2$ is, the better
+the model is.&lt;/p&gt;
+
+&lt;p&gt;Here, we can also consider the &lt;em&gt;adjusted R-squared&lt;/em&gt; to take account of the number
+of features $p$:&lt;/p&gt;
+
+\[R^2_{adj} = 1 - \frac{RSS/(n-p)}{TSS/(n-1)}\]
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Confidence intervals&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Confidence interval with the confidence $C$ means that the estimator will have
+the value within the interval with the probability $C$.
+I won’t go through the technical details of the derivation for those formulas,
+but it’s worth to mention the full forms. As it is known that&lt;/p&gt;
+
+\[\frac{\hat\beta_k - \beta_k}{se(\hat\beta_k)} \sim t_{1-\alpha/2,\ n-p},\]
+
+&lt;p&gt;we can say $(1-\alpha) \cdot 100$% confidence interval for $\beta_k$ is&lt;/p&gt;
+
+\[CI(\beta_k, (1-\alpha) \cdot 100) = \hat\beta_k \pm se(\hat\beta_k) \cdot t_{1-\alpha/2, n-p}.\]
+
+&lt;p&gt;The range terms consist of the &lt;em&gt;point estimate&lt;/em&gt;, the &lt;em&gt;estimated standard error
+of the point estimate&lt;/em&gt;, and the &lt;em&gt;quantile of the relevant distribution&lt;/em&gt;. This
+format holds for the other confidence intervals. For example, consider the new
+data $\mathbf{x}_0$. The confidence intervals for $\mathbb{E} y_0$ and $y_0$ are:&lt;/p&gt;
+
+\[CI(\mathbb{E} y_0, (1-\alpha) \cdot 100) = \mathbf{x}_0^\intercal \hat\beta \pm \hat\sigma \sqrt{\mathbf{x}_0^\intercal (\mathbf{X}^\intercal \mathbf{X})^{-1} \mathbf{x}_0} \cdot t_{1-\alpha/2,\ n-p},\]
+
+\[CI(y_0, (1-\alpha) \cdot 100) = \mathbf{x}_0^\intercal \hat\beta \pm \hat\sigma \sqrt{1+\mathbf{x}_0^\intercal (\mathbf{X}^\intercal \mathbf{X})^{-1} \mathbf{x}_0} \cdot t_{1-\alpha/2,\ n-p}.\]
+
+&lt;h3 id=&quot;pros-and-cons-on-interpretability&quot;&gt;Pros and cons on interpretability&lt;/h3&gt;
+
+&lt;p&gt;So far we took a look for the linear regression and how we interpret the results
+from the algorithm. Here, we summarise the merits and drawbacks of the linear
+regression in the eyes of interpretability. Based on the criteria on &lt;a href=&quot;https://christophm.github.io/interpretable-ml-book/explanation.html#good-explanation&quot;&gt;the Human-Friendly Explanations&lt;/a&gt;,&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Explanations are contrastive:&lt;/strong&gt; YES, but has limitation on the highly unrealistic
+setting of standardised data points.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Explanations are selected:&lt;/strong&gt; NO, because the model does not select from the
+other options. Linear regression just calculate the weights by the formulas.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Explanations are truthful:&lt;/strong&gt; YES. As long as the data is nicely prepared, 
+no other term can interfere the calculation during the inference time.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Explanations are general and probable:&lt;/strong&gt; YES. So clear mathematical foundations.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Other criteria relate on the social aspects, so we can say it depends on the
+interpreter of the resulting model.&lt;/p&gt;
+
+&lt;p&gt;Hence, long story short, linear regression generally works well, but only on the
+specific settings and assumptions. Keep in mind that this is the simplest form,
+and statistics community has already developed Generalised Linear Models (GLM) or
+Generalised Additive Models (GAM) to mitigate the weakness of the vanilla linear regression.
+I do not have a plan to go deeper for those topics, so pleas refer Molnar’s
+explanation on it &lt;a href=&quot;https://christophm.github.io/interpretable-ml-book/extend-lm.html&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Molnar, Christoph, Interprebatle Machine Learning - A Guide for Making Black Models Explainable (2021), &lt;a href=&quot;https://christophm.github.io/interpretable-ml-book/&quot;&gt;https://christophm.github.io/interpretable-ml-book/&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt; &lt;a href=&quot;#fnref:1:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content><author><name>Wonryong Ryou</name><email>w.r.ryou@gmail.com</email></author><category term="interpretable_machine_learning" /><category term="book_reading" /><category term="linear_regression" /><summary type="html">Here I skip the definitions and some qualitative concerns for the interpretability and move on to the interpretable models from Molnar’s reference1. The models introduced in this post are more like statistically founded approaches, which means they might not be able to applicable to complex tasks such as speech recognition or object detection. Nevertheless, first things first. Here I introduce 6+ ‘classical’ models for classification and regression. Algorithm Linear Monotone Interaction Classification Regression Linear regression O O X X O Logistic regression X O X O X Decision trees X ? O O O RuleFit O X O O O Naive Bayes X O X O X k-NN X X X O O A table from Interpretable Machine Learning, Molnar(2021)1. Here, each criterion stands for: Linear: whether the association between features and target is linear Monontone: whether the change in the feature space always monotonically affects the target Interaction: whether the model innately consists of interactive features Linear regression The structure genrerally follows the Molnar’s page, but I added some insights from the ETHZ Computational Statistics’ lecture notes. Formalisation The classic. Linear regression is the simplest model which predicts the target as a weighted sum of the feature inputs. Let’s do a quick recap of the process. Denote the target values $\mathbf{y} \in \mathbb{R}^n$ and the features $\mathbf{X} \in \mathbb{R}^{n \times p}$ including interceptions. With the intractable noise $\mathbf{\epsilon}$, we assume the latent relationship: \[y_i = \beta_1 x_{i,1} + \cdots + \beta_p x_{i,p} + \epsilon_i,\ \forall i \in [n]\] or \[\mathbf{y} = \mathbf{X} \mathbf{\beta} + \mathbf{\epsilon}\] and aproximate the weight vector $\mathbf{\beta}$ with: \[\hat{\beta} = \arg\min_{\mathbf{b}} \sum_{i=1}^{n} (y_i - \mathbf{x}_i^\intercal \mathbf{b})^2 = \arg\min_{\mathbf{b}} (\mathbf{Y} - \mathbf{X} \mathbf{b})^\intercal (\mathbf{Y} - \mathbf{X} \mathbf{b}) = (\mathbf{X}^\intercal \mathbf{X})^{-1} \mathbf{X}^\intercal \mathbf{Y}\] Pretty straightforward, isn’t it? Also, if we assume all the noise are drawn from the i.i.d. normal distribution, i.e., $\epsilon_i \sim \mathcal{N}(0, \sigma^2)$, then we also can approximate $\sigma^2$ with \[\hat{\sigma^2} = \frac{1}{n-p} \sum_{i=1}^n (y_i - \mathbf{x}_i^\intercal \hat{\beta})^2 \sim \frac{\sigma^2}{n-p} \chi^2_{n-p}\] and can derive the distribution of $\hat{\beta}$: \[\hat{\beta} \sim \mathcal{N}_p ( \mathbf{\beta}, \sigma^2 (\mathbf{X}^\intercal \mathbf{X})^{-1})\] Note that linear regression looks elegant, but it bases heavy assumptions for the data which are listed below: Linearity between the features and the target. Normality of the features for the confidence interval of each weight (which will be shown later) Homoscedasticity (constant variance) of the error terms. Independence among the data points. Fixed features, which means the data points are not variables but given constants. Absence of multicollinearity, which means the independence among the features. Model selections If there are too many features, we might want to reduce the dimension of the feature spaces while we don’t lose the predictive power or any other performance measure. There are majorly three ways to do so: subset selection, shrinkage, and dimension reduction (i.e., principal component analysis). The last one is hard to interpret, so let’s concentrate on the rests. Subset selection When we want select only $q$ features from the data, the best way to do this is to consider $\binom{p}{q}$ models and choose the “best” model among those. However, this approach is computationally heavy, so we often do the greedy approaches in either forward or backward direction to choose the models among the limited scopes. This field is not dead yet - you can see the presentation pdf for the seminar handled this topic in here, if you’re interested in :) Here, we often choose the criteria of the “best” model from Akaike Information Criterion (AIC), Bayesian Information Criterion, or adjusted R-squared, which will be explained later. Shrinkage Two veins of the shrinkage methods are prevailing: Lasso and Ridge. Those are often called as regularisation techniques as well, as they regularise the L1-norm and L2-norm of the weights $\beta$, respectively. With attaching the regularising term on the objective function with the scale parameter $\lambda$, Ridge regression on the standardised data can be explicitly written: \[\hat\beta^{Ridge} = (\mathbf{X}^\intercal \mathbf{X} + \lambda \mathbf{I})^{-1} \mathbf{X}^\intercal \mathbf{y},\] but Lasso only have numerical solutions via least angle regression (iterative algorithm) or so. Lasso regression’s feature weights vs $\lambda$. Note that the more weights goes zero as $\lambda$ grows. The funny thing here is that while Ridge still shows the continuous weights among all the features, Lasso regression innately “selects” the important features when the regularisation parameter $\lambda$ is big enough. From this property, we can shrink the model size based on the importance of each feature. Interpretation Weights $\beta$ We can interpret the results of the linear regression: for $k$-th feature, $x_{\cdot, k}$, $\hat\beta_k$ is the expectation of the result gap of the two inputs share all the features but differ in $k$-th with 1. You can derive it easily by the linearity. This interpretation holds for both numerical features and categorical features. Also, the feature importance of $x_k$ is measured by the absolute value of the t-statistic: \[t_{\hat\beta_k} = \frac{\hat\beta_k}{se(\hat\beta_k)},\] where $se$ is the standard error. R-squared measurement R-squared or $R^2$ is the measurement represents the portion of variance in $y$ that is explained by the linear regression model. It is defined as: \[R^2 = 1 - \frac{RSS}{TSS},\] where \[RSS = \sum_{i-1}^n (y_i - \hat{y}_i)^2,\ TSS = \sum_{i=1}^n (y_i - \bar{y}_i)^2\] RSS stands for the residual sum of squares and TSS is for total sum of squares. Each of term can be interpreted as following: $RSS/(n-1)$ is the sample variance of the residuals $\epsilon_1, \cdots \epsilon_n$, and $TSS/(n-1)$ is the sample variance of the data labels $y_1, \cdots y_n$. Hence, $RSS/TSS$ should be low if the model works well, which directly implies that the higher $R^2$ is, the better the model is. Here, we can also consider the adjusted R-squared to take account of the number of features $p$: \[R^2_{adj} = 1 - \frac{RSS/(n-p)}{TSS/(n-1)}\] Confidence intervals Confidence interval with the confidence $C$ means that the estimator will have the value within the interval with the probability $C$. I won’t go through the technical details of the derivation for those formulas, but it’s worth to mention the full forms. As it is known that \[\frac{\hat\beta_k - \beta_k}{se(\hat\beta_k)} \sim t_{1-\alpha/2,\ n-p},\] we can say $(1-\alpha) \cdot 100$% confidence interval for $\beta_k$ is \[CI(\beta_k, (1-\alpha) \cdot 100) = \hat\beta_k \pm se(\hat\beta_k) \cdot t_{1-\alpha/2, n-p}.\] The range terms consist of the point estimate, the estimated standard error of the point estimate, and the quantile of the relevant distribution. This format holds for the other confidence intervals. For example, consider the new data $\mathbf{x}_0$. The confidence intervals for $\mathbb{E} y_0$ and $y_0$ are: \[CI(\mathbb{E} y_0, (1-\alpha) \cdot 100) = \mathbf{x}_0^\intercal \hat\beta \pm \hat\sigma \sqrt{\mathbf{x}_0^\intercal (\mathbf{X}^\intercal \mathbf{X})^{-1} \mathbf{x}_0} \cdot t_{1-\alpha/2,\ n-p},\] \[CI(y_0, (1-\alpha) \cdot 100) = \mathbf{x}_0^\intercal \hat\beta \pm \hat\sigma \sqrt{1+\mathbf{x}_0^\intercal (\mathbf{X}^\intercal \mathbf{X})^{-1} \mathbf{x}_0} \cdot t_{1-\alpha/2,\ n-p}.\] Pros and cons on interpretability So far we took a look for the linear regression and how we interpret the results from the algorithm. Here, we summarise the merits and drawbacks of the linear regression in the eyes of interpretability. Based on the criteria on the Human-Friendly Explanations, Explanations are contrastive: YES, but has limitation on the highly unrealistic setting of standardised data points. Explanations are selected: NO, because the model does not select from the other options. Linear regression just calculate the weights by the formulas. Explanations are truthful: YES. As long as the data is nicely prepared, no other term can interfere the calculation during the inference time. Explanations are general and probable: YES. So clear mathematical foundations. Other criteria relate on the social aspects, so we can say it depends on the interpreter of the resulting model. Hence, long story short, linear regression generally works well, but only on the specific settings and assumptions. Keep in mind that this is the simplest form, and statistics community has already developed Generalised Linear Models (GLM) or Generalised Additive Models (GAM) to mitigate the weakness of the vanilla linear regression. I do not have a plan to go deeper for those topics, so pleas refer Molnar’s explanation on it here. Molnar, Christoph, Interprebatle Machine Learning - A Guide for Making Black Models Explainable (2021), https://christophm.github.io/interpretable-ml-book/ &amp;#8617; &amp;#8617;2</summary></entry><entry><title type="html">Interpretable Machine Learning - Pilot</title><link href="/2021/04/03/interpretable-ml-00.html" rel="alternate" type="text/html" title="Interpretable Machine Learning - Pilot" /><published>2021-04-03T00:00:00-07:00</published><updated>2021-04-03T00:00:00-07:00</updated><id>/2021/04/03/interpretable-ml-00</id><content type="html" xml:base="/2021/04/03/interpretable-ml-00.html">&lt;p&gt;To my beloved Swimmer pals and strangers: I want to introduce this wonderful
+resource named &lt;a href=&quot;https://christophm.github.io/interpretable-ml-book/&quot;&gt;&lt;strong&gt;Interpretable Machine Learning&lt;/strong&gt;&lt;/a&gt;
+by Christoph Molnar. This book has comprehensive concepts about interpretability
+on machine learning and deep learning, so I think it’s worth to study together
+to understand what the field is and what are happening nowadays.&lt;/p&gt;
+
+&lt;p&gt;I will generally follow the chapters of the book from top to bottom, but with
+some additional resources which I think could help the understanding of some
+concepts. In this pilot page, I’ll go through the motivation and introduction
+of this topic with the material of a NeurIPS 2020 tutorial, &lt;em&gt;“Explaining Machine 
+Learning Predictions: State-of-the-art, Challenges, and Opportunities”&lt;/em&gt; by H.
+Lakkaraju et al. You can find the original source from &lt;a href=&quot;https://explainml-tutorial.github.io/neurips20&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;why-do-we-need-interpretable-models&quot;&gt;Why do we need interpretable models?&lt;/h2&gt;
+
+&lt;p&gt;So why? No one can deny that machine learning is literally everywhere in this
+world. Especially from mid-2010 when deep learning models first emerged, almost
+all challenging tasks’ SoA solutions have been eplaced by those ominous looking stacked
+layers of matrices and functions. Those are deep; deeeep like Mariana Trench.
+The only difference between the trench and deep learning models is that the former
+has fixed depth but the latter is constantly getting deeper and even bigger.&lt;/p&gt;
+
+&lt;p&gt;One similarity I want to stress here is that both are not revealing much of their
+essence. We know too little about deep learning. We know that it can solve numerous
+tasks, but have no idea for &lt;em&gt;why it does perform well&lt;/em&gt;. Unlike ‘traditional’ 
+statistical models, deep neural networks’ interior is opaque – cannot find the
+meaning at the first sight.&lt;/p&gt;
+
+&lt;p&gt;This critical ignorance for the essence of the greatest power the world has is not
+welcomed by DARPA&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;. They concerned that when the models’ domain is so delicate,
+emboding the sensitive virtues, or related to human life, the slightest error can
+bring disasterous consequence. Especially when a human take charge in the
+model, they have zero-ish idea why the model performed how.
+They denoted this problem as &lt;strong&gt;XAI: eXplainable Artificial Intelligence&lt;/strong&gt; and 
+declared it as one of the core programs of their branches:&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;XAI is one of a handful of current DARPA programs expected to enable “third-wave AI &lt;br /&gt;
+systems”, where machines understand the context and environment in which they operate,  …&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;From then, the various works related to explainability and interpretability
+converged into the newly named field, XAI. We want the full control on what we
+make, and benefit us with the reliable results.&lt;/p&gt;
+
+&lt;h2 id=&quot;case-studies-of-ml-failures&quot;&gt;Case studies of ML failures&lt;/h2&gt;
+
+&lt;p&gt;Cases are excerpted from Last Week in AI #104&lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;bayerischer-rundfunks-study&quot;&gt;Bayerischer Rundfunk’s study&lt;/h3&gt;
+
+&lt;p&gt;You can see the whole media &lt;a href=&quot;https://web.br.de/interaktiv/ki-bewerbung/en/&quot;&gt;here&lt;/a&gt;.
+Although AI is believed to introduce less ‘prejudice’ than people do, the German
+broadcasting company BR’s study found that in some AI assistants used for assessing
+the job seekers’ video are affected by irrelevant features, such as wearing glasses
+or headscarf or putting a painting on the wall behind, during the applicants’ 
+personality assessment. Surely, that the target model seems not trained ‘fairly’,
+but should we note that there is no way to check this fairness unless we do post hoc
+examination so far, and moreover, no policy is made for making fair models.&lt;/p&gt;
+
+&lt;h3 id=&quot;can-computer-algorithms-learn-to-fight-wars-ethically&quot;&gt;Can Computer Algorithms Learn to Fight Wars Ethically?&lt;/h3&gt;
+
+&lt;p&gt;Not exactly a failure already happened, but this &lt;a href=&quot;https://www.washingtonpost.com/magazine/2021/02/17/pentagon-funds-killer-robots-but-ethics-are-under-debate/&quot;&gt;WP article&lt;/a&gt;
+triggers the debate on AIs’ decision making process. How would the robot handle
+kids in the war situation? Should they perform inaction to drive people to action
+in some cases? AI ethics and XAI are tightly connected in these themes, and to get
+any plausible solution of this, certain amount of translucent decision process
+is required for the AI.&lt;/p&gt;
+
+&lt;h2 id=&quot;how-do-we-achieve-model-understanding&quot;&gt;How do we achieve model understanding?&lt;/h2&gt;
+
+&lt;h3 id=&quot;1-build-inherently-interpretable-predictable-models&quot;&gt;1. Build inherently interpretable predictable models&lt;/h3&gt;
+
+&lt;p&gt;We can use decision tree or linear regression to boost the explainability
+of the decision. However, those traditional approaches lack performance.&lt;/p&gt;
+
+&lt;h3 id=&quot;2-explain-pre-built-models-in-a-post-hoc-manner&quot;&gt;2. Explain pre-built models in a post-hoc manner&lt;/h3&gt;
+
+&lt;p&gt;Since we usually encounter (deep) neural networks to examine, we need an &lt;em&gt;explainer&lt;/em&gt;
+to interpret the result of the model. The approaches can be either local or
+global, regarding the case’s sensitivity.&lt;/p&gt;
+
+&lt;h2 id=&quot;wrap-up&quot;&gt;Wrap up&lt;/h2&gt;
+
+&lt;p&gt;Hope this short post motivated you to start a journey to interpretability of
+machine learning. This is a fairly new field yet has utmost importance to our
+future scenary:)&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Explainable Artificial Intelligence (XAI) (2018), M. Turek, &lt;a href=&quot;https://www.darpa.mil/program/explainable-artificial-intelligence&quot;&gt;https://www.darpa.mil/program/explainable-artificial-intelligence&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Last Week in AI #104 (2021), &lt;a href=&quot;https://lastweekin.ai/p/104&quot;&gt;https://lastweekin.ai/p/104&lt;/a&gt; &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content><author><name>Wonryong Ryou</name><email>w.r.ryou@gmail.com</email></author><category term="interpretable_machine_learning" /><category term="book_reading" /><summary type="html">To my beloved Swimmer pals and strangers: I want to introduce this wonderful resource named Interpretable Machine Learning by Christoph Molnar. This book has comprehensive concepts about interpretability on machine learning and deep learning, so I think it’s worth to study together to understand what the field is and what are happening nowadays. I will generally follow the chapters of the book from top to bottom, but with some additional resources which I think could help the understanding of some concepts. In this pilot page, I’ll go through the motivation and introduction of this topic with the material of a NeurIPS 2020 tutorial, “Explaining Machine Learning Predictions: State-of-the-art, Challenges, and Opportunities” by H. Lakkaraju et al. You can find the original source from here. Why do we need interpretable models? So why? No one can deny that machine learning is literally everywhere in this world. Especially from mid-2010 when deep learning models first emerged, almost all challenging tasks’ SoA solutions have been eplaced by those ominous looking stacked layers of matrices and functions. Those are deep; deeeep like Mariana Trench. The only difference between the trench and deep learning models is that the former has fixed depth but the latter is constantly getting deeper and even bigger. One similarity I want to stress here is that both are not revealing much of their essence. We know too little about deep learning. We know that it can solve numerous tasks, but have no idea for why it does perform well. Unlike ‘traditional’ statistical models, deep neural networks’ interior is opaque – cannot find the meaning at the first sight. This critical ignorance for the essence of the greatest power the world has is not welcomed by DARPA1. They concerned that when the models’ domain is so delicate, emboding the sensitive virtues, or related to human life, the slightest error can bring disasterous consequence. Especially when a human take charge in the model, they have zero-ish idea why the model performed how. They denoted this problem as XAI: eXplainable Artificial Intelligence and declared it as one of the core programs of their branches: XAI is one of a handful of current DARPA programs expected to enable “third-wave AI systems”, where machines understand the context and environment in which they operate, … From then, the various works related to explainability and interpretability converged into the newly named field, XAI. We want the full control on what we make, and benefit us with the reliable results. Case studies of ML failures Cases are excerpted from Last Week in AI #1042. Bayerischer Rundfunk’s study You can see the whole media here. Although AI is believed to introduce less ‘prejudice’ than people do, the German broadcasting company BR’s study found that in some AI assistants used for assessing the job seekers’ video are affected by irrelevant features, such as wearing glasses or headscarf or putting a painting on the wall behind, during the applicants’ personality assessment. Surely, that the target model seems not trained ‘fairly’, but should we note that there is no way to check this fairness unless we do post hoc examination so far, and moreover, no policy is made for making fair models. Can Computer Algorithms Learn to Fight Wars Ethically? Not exactly a failure already happened, but this WP article triggers the debate on AIs’ decision making process. How would the robot handle kids in the war situation? Should they perform inaction to drive people to action in some cases? AI ethics and XAI are tightly connected in these themes, and to get any plausible solution of this, certain amount of translucent decision process is required for the AI. How do we achieve model understanding? 1. Build inherently interpretable predictable models We can use decision tree or linear regression to boost the explainability of the decision. However, those traditional approaches lack performance. 2. Explain pre-built models in a post-hoc manner Since we usually encounter (deep) neural networks to examine, we need an explainer to interpret the result of the model. The approaches can be either local or global, regarding the case’s sensitivity. Wrap up Hope this short post motivated you to start a journey to interpretability of machine learning. This is a fairly new field yet has utmost importance to our future scenary:) Explainable Artificial Intelligence (XAI) (2018), M. Turek, https://www.darpa.mil/program/explainable-artificial-intelligence &amp;#8617; Last Week in AI #104 (2021), https://lastweekin.ai/p/104 &amp;#8617;</summary></entry><entry><title type="html">Joined Quora as an ML Engineer!</title><link href="/2021/03/26/joined-quora.html" rel="alternate" type="text/html" title="Joined Quora as an ML Engineer!" /><published>2021-03-26T00:00:00-07:00</published><updated>2021-03-26T00:00:00-07:00</updated><id>/2021/03/26/joined-quora</id><content type="html" xml:base="/2021/03/26/joined-quora.html">&lt;p&gt;Hello stranger,&lt;/p&gt;
+
+&lt;p&gt;I’m happy to announce that I’m joining &lt;a href=&quot;https://www.quora.com/&quot;&gt;Quora&lt;/a&gt; from this
+Autumn! I’ll be part of the Quora ML team as a Machine Learning Engineer. Honestly
+I enjoyed all the unique processes of the interviews and the life in Quora will be
+as exciting as those experiences. I can’t still believe myself to be hired by the
+reknowned Silicon Valley company but slowly am realising it by my future co-workers’
+warm and kind welcomes. Cannot thank more to Hwan-Seung for introducing me the
+wonderful opportunity.&lt;/p&gt;
+
+&lt;p&gt;I’ll be located in Vancouver with my wife and start to work remotely, probably 
+from August. The only thing left for me now is successfully graduating from 
+ETH Zürich :) Wish me luck!&lt;/p&gt;
+
+&lt;p&gt;Until next time!&lt;/p&gt;</content><author><name>Wonryong Ryou</name><email>w.r.ryou@gmail.com</email></author><category term="announcement" /><summary type="html">Hello stranger, I’m happy to announce that I’m joining Quora from this Autumn! I’ll be part of the Quora ML team as a Machine Learning Engineer. Honestly I enjoyed all the unique processes of the interviews and the life in Quora will be as exciting as those experiences. I can’t still believe myself to be hired by the reknowned Silicon Valley company but slowly am realising it by my future co-workers’ warm and kind welcomes. Cannot thank more to Hwan-Seung for introducing me the wonderful opportunity. I’ll be located in Vancouver with my wife and start to work remotely, probably from August. The only thing left for me now is successfully graduating from ETH Zürich :) Wish me luck! Until next time!</summary></entry><entry><title type="html">Generating Images with Desired Features</title><link href="/2021/02/10/Controlling-GANs.html" rel="alternate" type="text/html" title="Generating Images with Desired Features" /><published>2021-02-10T00:00:00-08:00</published><updated>2021-02-10T00:00:00-08:00</updated><id>/2021/02/10/Controlling-GANs</id><content type="html" xml:base="/2021/02/10/Controlling-GANs.html">&lt;p&gt;Generative Adversarial Networks (GANs) are the best choices of modern image
+synthesis, aren’t they? We already have hardly distinguishable face generator
+of StyleGAN2&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; (you can see &lt;a href=&quot;https://thispersondoesnotexist.com/&quot;&gt;an online demo&lt;/a&gt;)
+and this seems only a step away from the perfect image generation. However, even
+that SOTA model has limitations: how to generate an image with &lt;strong&gt;certain traits&lt;/strong&gt;
+of interest? In other words, StyleGANs do not take any conditioning attributes
+on the resulting image but one long lengthy noise vector to generate an image.
+In this post, let’s take a look why this problem is hard and what are the efforts
+to solve (or at least, mitigate) it.&lt;/p&gt;
+
+&lt;h2 id=&quot;why-is-generating-a-specific-image-by-a-gan-model-hard&quot;&gt;Why is generating a specific image by a GAN model hard?&lt;/h2&gt;
+
+&lt;p&gt;In fact, if you want to generate an image of &lt;em&gt;any cat&lt;/em&gt; with &lt;em&gt;any species&lt;/em&gt; in &lt;em&gt;any
+posture&lt;/em&gt;, then there’s no problem. You just can just train a GAN with a pile of
+cat image dataset. That’s not our interest at the moment. The thing is, how can we
+tell the model the length of the hair, or the orientation of the head and so on
+and on?&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://neurohive.io/wp-content/uploads/2019/12/Screenshot_2-scaled.png&quot; alt=&quot;StyleGANs' architectures&quot; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;StyleGAN’s architectures. From the original paper&lt;sup id=&quot;fnref:1:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;As you can see on the above architecture, the StyleGAN family all get the input of
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;A&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;B&lt;/code&gt;: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;A&lt;/code&gt; denotes the learned style vector and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;B&lt;/code&gt; stands for the broadcasted
+true noise. The difference between the architectures is out of the scope of this
+post, so let’s focus on what those input vectors mean.&lt;/p&gt;
+
+&lt;h3 id=&quot;no-explicit-mention-of-the-feature&quot;&gt;No explicit mention of the feature&lt;/h3&gt;
+
+&lt;p&gt;As you realised, there is no explicit part indicating which dimension means what
+feature of the resulting images. All the images are generated from the noise vectors
+and, in fact, it is nearly impossible to configure the image in advance to synthesis.&lt;/p&gt;
+
+&lt;h3 id=&quot;entangled-vector-space&quot;&gt;Entangled vector space&lt;/h3&gt;
+
+&lt;p&gt;And yes, since the input vectors are noise, the model would not likely to learn 
+the features correpond to a single dimension of the input. In other words, if we
+want to change the speices of cat, then we probably need to change several values
+on the input vector. Also the adjustment will be definitely non-linear, so there’s
+no chance to get Siamese by putting 1 to the 42nd value and Russian blue by 2.
+This chaotic situation is denoted as &lt;strong&gt;entanglement&lt;/strong&gt; of the latent space.&lt;/p&gt;
+
+&lt;p&gt;In StyleGAN family, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;A&lt;/code&gt; is the &lt;em&gt;mapped style vector&lt;/em&gt; from noise so it is in some
+way more &lt;em&gt;disentangled&lt;/em&gt;, than the input noise space. It learns the ‘style’ from
+the noise and can be appliable to transfer the style to another generated image.
+Still, nonetheless, we don’t know which dimension stands for what.&lt;/p&gt;
+
+&lt;h2 id=&quot;proposed-methods&quot;&gt;Proposed methods&lt;/h2&gt;
+
+&lt;p&gt;Facing those challenges, researchers are working on the interpretability of exiting
+models and novel architectures. Here I list up some of those works.&lt;/p&gt;
+
+&lt;h3 id=&quot;feed-the-exact-image-to-the-model&quot;&gt;Feed the exact image to the model&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/2021-02-10-image2stylegan.png&quot; alt=&quot;Image2StyleGAN&quot; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Core algorithm of Image2StyleGAN. From the original paper&lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Somehow unrealistic setting, isn’t it:) but if we can obtain the nice latent style vector
+producing the image we have, then we can play with the model much easier. Abdal et al.&lt;sup id=&quot;fnref:2:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;
+proposed the simple gradient descent based algorithm for it.&lt;/p&gt;
+
+&lt;p&gt;This algorithm starts from a random vector and gradually optimise the style vector
+to produce as similar image as possible to the given image. Here, $L_{perceptual}$
+is the &lt;em&gt;perceptual loss&lt;/em&gt; (or perceptual distance) between two images. I mentioned 
+briefly about this at my &lt;a href=&quot;/2021/01/16/Evaluating-GANs.html#bonus-perceptual-path-length-ppl&quot;&gt;previous post&lt;/a&gt;.
+This perceptual loss is to minimise the stylistic difference between images
+by using pre-trained VGG-16 network’s interim results. Hence, the optimised 
+latent style vector will produce the most similar image in terms of the pixels and
+the (machine) perception.&lt;/p&gt;
+
+&lt;p&gt;The authors already extended this to Image2StyleGAN++, but I would insist
+the powerful use case of this method regarding this post’s theme is that we can
+collect the style vectors from the set of images with our desired features.
+We could hopefully find some common directions from the vectors!&lt;/p&gt;
+
+&lt;h3 id=&quot;provide-details-to-the-model&quot;&gt;Provide details to the model&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/2021-02-10-simplegans.jpg&quot; width=&quot;600&quot; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Some primitive GANs. Source unknown.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;This is what ConditionalGAN&lt;sup id=&quot;fnref:3&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:3&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt; tried at first - providing the additional input
+to the generator model. Early stage of works on GAN (image above) including CGAN,
+ACGAN and infoGAN shows how they tried to put the additional information to the
+entire architecture. This approach is intuitive as well as simple to implement.
+However, in many cases, those works are tested with categorical values at most
+10 (and one or two continuous hidden features in infoGAN cases), so have limit
+on scalability.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/2021-02-10-cvae-gan.png&quot; alt=&quot;cvae-gan&quot; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;CVAE-GAN architecture and the loss propagation diagram. From the original paper&lt;sup id=&quot;fnref:4&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:4&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;4&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;CVAE-GAN&lt;sup id=&quot;fnref:4:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:4&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;4&lt;/a&gt;&lt;/sup&gt; is an alternative to vanilla GAN approaches. You might heard about 
+Variational Auto-Encoder, or VAE, to generate images just like GANs do but in 
+deterministic way. The idea of VAEs is to encode the latent vectors from the real
+images and later decode them. In mathematical terms, the objective of VAEs is:&lt;/p&gt;
+
+\[\log P(X) - D_{KL} [Q(z|X) \| P(z|X)] = \mathbb{E} [\log P(X|z)] - D_{KL} [Q(z|X) \| P(z)]\]
+
+&lt;p&gt;where $Q(z|x)$ is the encoder distribution. Simplifying the calculation, we usually
+model the true distribution $P$ with a Gaussian. Anyway, CVAE is just conditioning
+every term on the condition of interest, $c$.&lt;/p&gt;
+
+&lt;p&gt;VAE family usually performs ‘okay’ with blurry results, but at least in determinstic sense.
+CVAE-GAN merges two named architectures - treating the generator of GAN
+as the decoder of CVAE, and update them with the losses calculated from the 
+auxiliary classifier and discriminator. To overcome the vanishing gradient during the
+GAN training, the authors proposed &lt;em&gt;mean feature matching&lt;/em&gt; loss term as well, which
+is quite similar to the perceptual loss but within the model itself. Interested
+readers can read the original paper listed below.&lt;/p&gt;
+
+&lt;h3 id=&quot;finding-semantic-transformations-of-the-model&quot;&gt;Finding semantic transformations of the model&lt;/h3&gt;
+
+&lt;p&gt;This is the post-processing approach of controlling GAN. In case of StyleGAN, 
+after the image is generated, we can play with the style vectors to see which
+value corresponds to what visual feature. However, the style vector has 512
+dimension by default setting and we may don’t have much time to play with each
+of the value. Plus, the style vector can still be entangled, so we might not find
+the exact feature we want by brute-force.&lt;/p&gt;
+
+&lt;p&gt;Yujun et al.&lt;sup id=&quot;fnref:5&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:5&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;5&lt;/a&gt;&lt;/sup&gt; proposed an elegant approach named SeFa (Semantic Factorization)
+to find &lt;em&gt;significant transformations&lt;/em&gt; on several generative models, including 
+StyleGAN v1 and v2, PGGAN, and BigGAN. Their idea is simple: take the first affine 
+transformation of the generator and find the direction on the input vector which 
+results in the most change in the objective space. Let’s formulate this by following
+authors’ logic.&lt;/p&gt;
+
+&lt;p&gt;Consider a generator $G$ taking an input $\mathbf{z} \in \mathbb{R}^d$. Denote $G_1$ be the first affine
+transformation of $G$. We can formulate this:&lt;/p&gt;
+
+\[G_1(\mathbf{z}) = \mathbf{A} \mathbf{z} + \mathbf{b}\]
+
+&lt;p&gt;Let’s say the resulting dimension is $m$, so $\mathbf{A} \in \mathbb{R}^{m \times d}$ and $\mathbf{b} \in \mathbb{R}^m$. 
+Editing the image can be denoted as:&lt;/p&gt;
+
+\[G(\mathbf{z}') = G(\mathbf{z} + \alpha \mathbf{n})\]
+
+&lt;p&gt;where $\mathbf{n} \in \mathbb{R}^d$ is an unit vector and $\alpha$ is an manipulation intensity.
+From this preliminaries, let’s expand the first transformation with $\mathbf{z}’$.&lt;/p&gt;
+
+\[\begin{align*}
+    G_1(\mathbf{z}') &amp;amp;= G_1(\mathbf{z} + \alpha \mathbf{n}) \\
+    &amp;amp;= \mathbf{A} \mathbf{z} + \mathbf{b} + \alpha \mathbf{A} \mathbf{n} \\
+    &amp;amp;= G_1(\mathbf{z}) + \alpha \mathbf{A} \mathbf{n}
+\end{align*}\]
+
+&lt;p&gt;This states that the transformation is invariant to the bias trained.
+The authors propose to solve the following optimisation problem:&lt;/p&gt;
+
+\[\mathbf{N}^* = \arg\max_{\mathbf{N} \in \mathbb{R}^{d \times k},\ \mathbf{n}_i^\intercal \mathbf{n}_i = 1,\ \forall i \in [k]} \Sigma_{i=1}^{k} \| \mathbf{A} \mathbf{n}_i \|_2^2\]
+
+&lt;p&gt;where $\mathbf{N} = [\mathbf{n}_1, \cdots, \mathbf{n}_k]$ and is the $k$-&lt;em&gt;most-significant
+transformations&lt;/em&gt;. Introducing the Lagrange multipliers $\lambda_1, \cdots \lambda_k$ to solve:&lt;/p&gt;
+
+\[\begin{align*}
+    \mathbf{N}^* &amp;amp;= \arg\max \Sigma_{i=1}^{k} \| \mathbf{A} \mathbf{n}_i \|_2^2 - \Sigma_{i=1}^{k} \lambda_i (\mathbf{n}_i^\intercal \mathbf{n}_i - 1) \\
+    &amp;amp;= \arg\max \Sigma_{i=1}^{k} \left( \mathbf{n}_i^\intercal \mathbf{A}^\intercal \mathbf{A} \mathbf{n}_i - \lambda_i \mathbf{n}_i^\intercal \mathbf{n}_i - \lambda_i \right) \\
+    \frac{\partial}{\partial \mathbf{n}_i} \mathbf{N}^* &amp;amp;= 2 \mathbf{A}^\intercal \mathbf{A} \mathbf{n}_i - 2\lambda_i \mathbf{n}_i = 0
+\end{align*}\]
+
+&lt;p&gt;so it searching $\mathbf{n}_i$ goes equivalent to finding $k$ eigenvectors with 
+the largest eigenvalues of $\mathbf{A}^\intercal \mathbf{A}$. Simple, isn’t it?
+we can just add $\mathbf{n}_i$ with the scalar parameter $\alpha$ to adjust our
+image. Oh, this can make positive synergy with the first approach I introduced:)&lt;/p&gt;
+
+&lt;p&gt;Yes, I should admit that this approach may not lead to the features what we exactly 
+want to find, but would insist this has much higher chance to find some meaningful
+transformations.&lt;/p&gt;
+
+&lt;h2 id=&quot;wrap-up&quot;&gt;Wrap up&lt;/h2&gt;
+
+&lt;p&gt;We went through the ways how to generate the image with our desired features.
+Nothing is so perfect - I’m still seeking and making experiments to control the
+image generation with as many attributes as possible. Until the mysteries of GANs
+be unveiled:)&lt;/p&gt;
+
+&lt;h2 id=&quot;read-more&quot;&gt;Read more&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://wiseodd.github.io/techblog/2016/12/17/conditional-vae/&quot;&gt;Conditional Variational Autoencoder: Intuition and Implementation&lt;/a&gt;, A. Kristiadi, 2016&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://openaccess.thecvf.com/content_ICCV_2017/papers/Bao_CVAE-GAN_Fine-Grained_Image_ICCV_2017_paper.pdf&quot;&gt;CVAE-GAN original paper&lt;/a&gt;, J. Bao et al., 2017&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://genforce.github.io/sefa/&quot;&gt;SeFa demo page&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Karras, Tero, et al. “Analyzing and improving the image quality of stylegan.” Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2020. &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt; &lt;a href=&quot;#fnref:1:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Abdal, Rameen, Yipeng Qin, and Peter Wonka. “Image2stylegan: How to embed images into the stylegan latent space?.” Proceedings of the IEEE/CVF International Conference on Computer Vision. 2019. &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt; &lt;a href=&quot;#fnref:2:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:3&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Mirza, Mehdi, and Simon Osindero. “Conditional generative adversarial nets.” arXiv preprint arXiv:1411.1784 (2014). &lt;a href=&quot;#fnref:3&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:4&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Bao, Jianmin, et al. “CVAE-GAN: fine-grained image generation through asymmetric training.” Proceedings of the IEEE international conference on computer vision. 2017. &lt;a href=&quot;#fnref:4&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt; &lt;a href=&quot;#fnref:4:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:5&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Shen, Yujun, and Bolei Zhou. “Closed-form factorization of latent semantics in gans.” arXiv preprint arXiv:2007.06600 (2020). &lt;a href=&quot;#fnref:5&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content><author><name>Wonryong Ryou</name><email>w.r.ryou@gmail.com</email></author><category term="GAN" /><category term="CVAE" /><category term="SeFa" /><category term="disentanglement" /><category term="conditioned_generation" /><summary type="html">Generative Adversarial Networks (GANs) are the best choices of modern image synthesis, aren’t they? We already have hardly distinguishable face generator of StyleGAN21 (you can see an online demo) and this seems only a step away from the perfect image generation. However, even that SOTA model has limitations: how to generate an image with certain traits of interest? In other words, StyleGANs do not take any conditioning attributes on the resulting image but one long lengthy noise vector to generate an image. In this post, let’s take a look why this problem is hard and what are the efforts to solve (or at least, mitigate) it. Why is generating a specific image by a GAN model hard? In fact, if you want to generate an image of any cat with any species in any posture, then there’s no problem. You just can just train a GAN with a pile of cat image dataset. That’s not our interest at the moment. The thing is, how can we tell the model the length of the hair, or the orientation of the head and so on and on? StyleGAN’s architectures. From the original paper1. As you can see on the above architecture, the StyleGAN family all get the input of A and B: A denotes the learned style vector and B stands for the broadcasted true noise. The difference between the architectures is out of the scope of this post, so let’s focus on what those input vectors mean. No explicit mention of the feature As you realised, there is no explicit part indicating which dimension means what feature of the resulting images. All the images are generated from the noise vectors and, in fact, it is nearly impossible to configure the image in advance to synthesis. Entangled vector space And yes, since the input vectors are noise, the model would not likely to learn the features correpond to a single dimension of the input. In other words, if we want to change the speices of cat, then we probably need to change several values on the input vector. Also the adjustment will be definitely non-linear, so there’s no chance to get Siamese by putting 1 to the 42nd value and Russian blue by 2. This chaotic situation is denoted as entanglement of the latent space. In StyleGAN family, A is the mapped style vector from noise so it is in some way more disentangled, than the input noise space. It learns the ‘style’ from the noise and can be appliable to transfer the style to another generated image. Still, nonetheless, we don’t know which dimension stands for what. Proposed methods Facing those challenges, researchers are working on the interpretability of exiting models and novel architectures. Here I list up some of those works. Feed the exact image to the model Core algorithm of Image2StyleGAN. From the original paper2. Somehow unrealistic setting, isn’t it:) but if we can obtain the nice latent style vector producing the image we have, then we can play with the model much easier. Abdal et al.2 proposed the simple gradient descent based algorithm for it. This algorithm starts from a random vector and gradually optimise the style vector to produce as similar image as possible to the given image. Here, $L_{perceptual}$ is the perceptual loss (or perceptual distance) between two images. I mentioned briefly about this at my previous post. This perceptual loss is to minimise the stylistic difference between images by using pre-trained VGG-16 network’s interim results. Hence, the optimised latent style vector will produce the most similar image in terms of the pixels and the (machine) perception. The authors already extended this to Image2StyleGAN++, but I would insist the powerful use case of this method regarding this post’s theme is that we can collect the style vectors from the set of images with our desired features. We could hopefully find some common directions from the vectors! Provide details to the model Some primitive GANs. Source unknown. This is what ConditionalGAN3 tried at first - providing the additional input to the generator model. Early stage of works on GAN (image above) including CGAN, ACGAN and infoGAN shows how they tried to put the additional information to the entire architecture. This approach is intuitive as well as simple to implement. However, in many cases, those works are tested with categorical values at most 10 (and one or two continuous hidden features in infoGAN cases), so have limit on scalability. CVAE-GAN architecture and the loss propagation diagram. From the original paper4. CVAE-GAN4 is an alternative to vanilla GAN approaches. You might heard about Variational Auto-Encoder, or VAE, to generate images just like GANs do but in deterministic way. The idea of VAEs is to encode the latent vectors from the real images and later decode them. In mathematical terms, the objective of VAEs is: \[\log P(X) - D_{KL} [Q(z|X) \| P(z|X)] = \mathbb{E} [\log P(X|z)] - D_{KL} [Q(z|X) \| P(z)]\] where $Q(z|x)$ is the encoder distribution. Simplifying the calculation, we usually model the true distribution $P$ with a Gaussian. Anyway, CVAE is just conditioning every term on the condition of interest, $c$. VAE family usually performs ‘okay’ with blurry results, but at least in determinstic sense. CVAE-GAN merges two named architectures - treating the generator of GAN as the decoder of CVAE, and update them with the losses calculated from the auxiliary classifier and discriminator. To overcome the vanishing gradient during the GAN training, the authors proposed mean feature matching loss term as well, which is quite similar to the perceptual loss but within the model itself. Interested readers can read the original paper listed below. Finding semantic transformations of the model This is the post-processing approach of controlling GAN. In case of StyleGAN, after the image is generated, we can play with the style vectors to see which value corresponds to what visual feature. However, the style vector has 512 dimension by default setting and we may don’t have much time to play with each of the value. Plus, the style vector can still be entangled, so we might not find the exact feature we want by brute-force. Yujun et al.5 proposed an elegant approach named SeFa (Semantic Factorization) to find significant transformations on several generative models, including StyleGAN v1 and v2, PGGAN, and BigGAN. Their idea is simple: take the first affine transformation of the generator and find the direction on the input vector which results in the most change in the objective space. Let’s formulate this by following authors’ logic. Consider a generator $G$ taking an input $\mathbf{z} \in \mathbb{R}^d$. Denote $G_1$ be the first affine transformation of $G$. We can formulate this: \[G_1(\mathbf{z}) = \mathbf{A} \mathbf{z} + \mathbf{b}\] Let’s say the resulting dimension is $m$, so $\mathbf{A} \in \mathbb{R}^{m \times d}$ and $\mathbf{b} \in \mathbb{R}^m$. Editing the image can be denoted as: \[G(\mathbf{z}') = G(\mathbf{z} + \alpha \mathbf{n})\] where $\mathbf{n} \in \mathbb{R}^d$ is an unit vector and $\alpha$ is an manipulation intensity. From this preliminaries, let’s expand the first transformation with $\mathbf{z}’$. \[\begin{align*} G_1(\mathbf{z}') &amp;amp;= G_1(\mathbf{z} + \alpha \mathbf{n}) \\ &amp;amp;= \mathbf{A} \mathbf{z} + \mathbf{b} + \alpha \mathbf{A} \mathbf{n} \\ &amp;amp;= G_1(\mathbf{z}) + \alpha \mathbf{A} \mathbf{n} \end{align*}\] This states that the transformation is invariant to the bias trained. The authors propose to solve the following optimisation problem: \[\mathbf{N}^* = \arg\max_{\mathbf{N} \in \mathbb{R}^{d \times k},\ \mathbf{n}_i^\intercal \mathbf{n}_i = 1,\ \forall i \in [k]} \Sigma_{i=1}^{k} \| \mathbf{A} \mathbf{n}_i \|_2^2\] where $\mathbf{N} = [\mathbf{n}_1, \cdots, \mathbf{n}_k]$ and is the $k$-most-significant transformations. Introducing the Lagrange multipliers $\lambda_1, \cdots \lambda_k$ to solve: \[\begin{align*} \mathbf{N}^* &amp;amp;= \arg\max \Sigma_{i=1}^{k} \| \mathbf{A} \mathbf{n}_i \|_2^2 - \Sigma_{i=1}^{k} \lambda_i (\mathbf{n}_i^\intercal \mathbf{n}_i - 1) \\ &amp;amp;= \arg\max \Sigma_{i=1}^{k} \left( \mathbf{n}_i^\intercal \mathbf{A}^\intercal \mathbf{A} \mathbf{n}_i - \lambda_i \mathbf{n}_i^\intercal \mathbf{n}_i - \lambda_i \right) \\ \frac{\partial}{\partial \mathbf{n}_i} \mathbf{N}^* &amp;amp;= 2 \mathbf{A}^\intercal \mathbf{A} \mathbf{n}_i - 2\lambda_i \mathbf{n}_i = 0 \end{align*}\] so it searching $\mathbf{n}_i$ goes equivalent to finding $k$ eigenvectors with the largest eigenvalues of $\mathbf{A}^\intercal \mathbf{A}$. Simple, isn’t it? we can just add $\mathbf{n}_i$ with the scalar parameter $\alpha$ to adjust our image. Oh, this can make positive synergy with the first approach I introduced:) Yes, I should admit that this approach may not lead to the features what we exactly want to find, but would insist this has much higher chance to find some meaningful transformations. Wrap up We went through the ways how to generate the image with our desired features. Nothing is so perfect - I’m still seeking and making experiments to control the image generation with as many attributes as possible. Until the mysteries of GANs be unveiled:) Read more Conditional Variational Autoencoder: Intuition and Implementation, A. Kristiadi, 2016 CVAE-GAN original paper, J. Bao et al., 2017 SeFa demo page Karras, Tero, et al. “Analyzing and improving the image quality of stylegan.” Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2020. &amp;#8617; &amp;#8617;2 Abdal, Rameen, Yipeng Qin, and Peter Wonka. “Image2stylegan: How to embed images into the stylegan latent space?.” Proceedings of the IEEE/CVF International Conference on Computer Vision. 2019. &amp;#8617; &amp;#8617;2 Mirza, Mehdi, and Simon Osindero. “Conditional generative adversarial nets.” arXiv preprint arXiv:1411.1784 (2014). &amp;#8617; Bao, Jianmin, et al. “CVAE-GAN: fine-grained image generation through asymmetric training.” Proceedings of the IEEE international conference on computer vision. 2017. &amp;#8617; &amp;#8617;2 Shen, Yujun, and Bolei Zhou. “Closed-form factorization of latent semantics in gans.” arXiv preprint arXiv:2007.06600 (2020). &amp;#8617;</summary></entry><entry><title type="html">Evaluating GANs</title><link href="/2021/01/16/Evaluating-GANs.html" rel="alternate" type="text/html" title="Evaluating GANs" /><published>2021-01-16T00:00:00-08:00</published><updated>2021-01-16T00:00:00-08:00</updated><id>/2021/01/16/Evaluating-GANs</id><content type="html" xml:base="/2021/01/16/Evaluating-GANs.html">&lt;p&gt;Although Generative Adversarial Networks (GANs) are breaking the ground in daily
+basis, there is no gold-standard metric to measure how well the genertor works.
+We all know that several ML tasks’ standard metrics - such as mean square error (MSE)
+for linear regression and cross entropy for classification - but what about for
+GANs? How do we choose the &lt;em&gt;best&lt;/em&gt; model upon our model selection?&lt;/p&gt;
+
+&lt;h2 id=&quot;why-is-evaluating-gans-hard&quot;&gt;Why is evaluating GANs hard?&lt;/h2&gt;
+
+&lt;p&gt;Let’s break down the necessities first. We need to take care of two main 
+characterstics for the generated images: &lt;strong&gt;fidelity&lt;/strong&gt; and &lt;strong&gt;diversity&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;dl&gt;
+  &lt;dt&gt;Fidelity&lt;/dt&gt;
+  &lt;dd&gt;Quality of images - how realistic are the generated images; discriminability.&lt;/dd&gt;
+  &lt;dt&gt;Diversity&lt;/dt&gt;
+  &lt;dd&gt;Variaty of images. GANs should not generate single image any time.&lt;/dd&gt;
+&lt;/dl&gt;
+
+&lt;p&gt;Not only for those two, it has been suggested to measure disentanglement of the 
+latent space, boundness, agreement with human perceptual judgements, etc.&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;
+After all those traits to fulfill, there has yet to appear a concurred metric
+for evaluating GANs.&lt;/p&gt;
+
+&lt;h2 id=&quot;qualitative-measurements&quot;&gt;Qualitative Measurements&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/2021-01-16-qualitative.png&quot; alt=&quot;Qualitative measures&quot; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Qualitative measures, from Ali(2019).&lt;sup id=&quot;fnref:1:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;It is definitely possible to hire persons to manually evaluate each model, but 
+is not a valid option in ordinary cases due to the cost and consistency issues.&lt;/p&gt;
+
+&lt;p&gt;According to the survey paper, there are some of qualitative approaches to measure
+performance of GANs:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Nearest Neighbors&lt;/li&gt;
+  &lt;li&gt;Rapid Scene Categorization&lt;/li&gt;
+  &lt;li&gt;Rating and Preference Judgment&lt;/li&gt;
+  &lt;li&gt;Evaluating Mode Drop and Mode Collapse&lt;/li&gt;
+  &lt;li&gt;Investigating and Visualizing the Internals of Networks.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;All above requires human participants, but if those are done by M-Turk or equivalent
+cost-efficient services, they can be some promising measures to detect apparent
+features. 
+We’ll skip the thorough examination of each metric in this post. Instead, let’s
+focus on some quantitative metrics which are widely used.&lt;/p&gt;
+
+&lt;h2 id=&quot;quantitative-measurements&quot;&gt;Quantitative Measurements&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/2021-01-16-quantitative.png&quot; alt=&quot;Quantitative measures&quot; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Quantitative measures, from Ali(2019).&lt;sup id=&quot;fnref:1:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;There are tons of metrics suggested above, but we’ll focus on Inception Score (IS), 
+Fréchet Incption Distance (FID) and Maximum Mean Discrepancy (MMD) from the table.&lt;/p&gt;
+
+&lt;h3 id=&quot;inception-score-is&quot;&gt;Inception Score (IS)&lt;/h3&gt;
+
+&lt;p&gt;IS is based on the pre-trained ImageNet model, &lt;em&gt;Inception-v3&lt;/em&gt;. This metric measures
+the Kullback-Leibler divergence between the conditional and marginal label distributions
+over generated data. Defined as:&lt;/p&gt;
+
+\[IS(\mathcal{G}) = \exp [ \mathbb{E}_{x \sim \mathbb{P}_\mathcal{G}} D_{KL}(p_\mathcal{M}(y|x) \| p_\mathcal{M}(y)) ]\]
+
+&lt;p&gt;where $\mathcal{G}$ stands for generator model in interest, pre-trained inception model $\mathcal{M}$.
+Though IS is widely adopted through many literatures, shortcomings of IS emerged.
+First, the metric depends on the distributions, both based on $\mathcal{M}$, and second,
+the distribution of the real data ($\mathbb{P}_{r}$) is not used anywhere.&lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt; Hence, IS
+is prone to&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;be exploited or gamed. This means the model can overfit to ‘easier’ classes, 
+not covering the whole labels.&lt;/li&gt;
+  &lt;li&gt;miss useful ‘real’ features, as the metric only relies on $\mathcal{M}$.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;fréchet-inception-distance-fid&quot;&gt;Fréchet Inception Distance (FID)&lt;/h3&gt;
+
+&lt;p&gt;FID is suggested to overcome IS’s shortcomings. This idea is originated
+from the signal difference metric. According to DeepLearning.ai’s explanation,
+we can understand the original Fréchet distance as &lt;em&gt;minimum leash distance 
+between a human and a dog strolling&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;FID uses not only pre-trained Inception-v3’s feature maps, but also bases on the
+objective dataset’s distribution. Defined as:&lt;/p&gt;
+
+\[FID(r, \mathcal{G}) = \| \mu_r - \mu_\mathcal{G} \|^2_2 + tr ( \Sigma_r + \Sigma_\mathcal{G} - 2 \sqrt{\Sigma_r \Sigma_\mathcal{G}} )\]
+
+&lt;p&gt;where $\mu_\cdot$ is the mean and $\Sigma_\cdot$ is the covariance matrix.
+The lower the FID, the better model $\mathcal{G}$ is.
+Hence, FID is likely to measure the FD between two multivariate normal distributions.
+FID still has limitations such as:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;cannot capture all the real features as it puts its feet on Inception.&lt;/li&gt;
+  &lt;li&gt;needs a large sample size to reduce noise during the calculation.&lt;/li&gt;
+  &lt;li&gt;only limited statistics used. Normal distribution assumption could lose information.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Based on my experience, &lt;a href=&quot;https://github.com/mseitzer/pytorch-fid&quot;&gt;pytorch-FID&lt;/a&gt; took
+~2 min for 3K and 5K image pools one Nvidia Titan RTX.&lt;/p&gt;
+
+&lt;h3 id=&quot;maximum-mean-discrepancy-mmd&quot;&gt;Maximum Mean Discrepancy (MMD)&lt;/h3&gt;
+
+&lt;p&gt;Above two metric are widely used in practice, but we can also take a look at
+a non-Inception-based metric. MMD measures the dissimiliarity between the real
+distribution and generated distribution for some fixed kernel function $k$.&lt;/p&gt;
+
+\[MMD_k (r, \mathcal{G}) = \mathbb{E}_{x, x' \sim \mathbb{P}_r} [k(x, x')]
+- 2\mathbb{E}_{x \sim \mathbb{P}_r,\ y \sim \mathbb{P}_\mathcal{G}} [k(x, y)]
++ \mathbb{E}_{y, y' \sim \mathbb{P}_\mathcal{G}} [k(y, y')]\]
+
+&lt;p&gt;Empirically, MMD works well with the kernels on feature 
+space of pre-trained ResNet. The computing complexity is also low, so some studies
+suggest to use this metric.&lt;sup id=&quot;fnref:2:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;bonus-perceptual-path-length-ppl&quot;&gt;Bonus: Perceptual Path Length (PPL)&lt;/h3&gt;
+
+&lt;p&gt;For the last metric, we can also take look at the off-topic-but-maybe-useful
+measurement. PPL is first introduced in StyleGAN&lt;sup id=&quot;fnref:3&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:3&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt; for measuring “how a generator
+manages smoothly interpolate between points in its latent space”.
+The authors used VGG16 embeddings for comparison to concur with human perception.
+PPL on the latent space $\mathcal{Z}$ would be:&lt;/p&gt;
+
+\[PPL_\mathcal{Z} = \mathbb{E} \left[ \frac{1}{\epsilon^2} d(\mathcal{G}(\text{slerp}(z_1, z_2; t)), \mathcal{G}(\text{slerp}(z_1, z_2; t+\epsilon))) \right]\]
+
+&lt;p&gt;where $d$ is the perceptual distance between the images on VGG16, 
+$\text{slerp}$ is the spherical linear interpolation,
+and $\epsilon=10^{-4}$ as an arbitrary small number.
+This looks sneezy but this means the empirical mean of the perceptual distances
+between consequently generated images.&lt;/p&gt;
+
+&lt;p&gt;This measure fits perfectly to the objective of StyleGAN - to learn the disentangled
+continuously controllable styles with the latent vectors.&lt;/p&gt;
+
+&lt;h2 id=&quot;wrap-up&quot;&gt;Wrap up&lt;/h2&gt;
+
+&lt;p&gt;Although FID and IS are widely used in the field, they are still not the gold-standard
+for the GAN performance metric. Researchers are seeking alternatives, so we can
+wait for the brains of the era find the result :smile:&lt;/p&gt;
+
+&lt;h2 id=&quot;read-more&quot;&gt;Read more&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://machinelearningmastery.com/how-to-evaluate-generative-adversarial-networks/&quot;&gt;How to evaluate generative adversarial networks&lt;/a&gt;, J. Brownlee, 2019&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.coursera.org/lecture/build-better-generative-adversarial-networks-gans/evaluation-qTs8q&quot;&gt;Evaluation&lt;/a&gt;, DeepLearning.ai on Coursera, 2020&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Borji, Ali. “Pros and cons of gan evaluation measures.” Computer Vision and Image Understanding 179 (2019): 41-65 &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt; &lt;a href=&quot;#fnref:1:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt; &lt;a href=&quot;#fnref:1:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;sup&gt;3&lt;/sup&gt;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Xu, Qiantong, et al. “An empirical study on evaluation metrics of generative adversarial networks.” arXiv preprint arXiv:1806.07755 (2018). &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt; &lt;a href=&quot;#fnref:2:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:3&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Karras, Tero, Samuli Laine, and Timo Aila. “A style-based generator architecture for generative adversarial networks.” Proceedings of the IEEE conference on computer vision and pattern recognition. 2019. &lt;a href=&quot;#fnref:3&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content><author><name>Wonryong Ryou</name><email>w.r.ryou@gmail.com</email></author><category term="GAN" /><category term="metric" /><category term="IS" /><category term="FID" /><category term="MMD" /><category term="PPL" /><summary type="html">Although Generative Adversarial Networks (GANs) are breaking the ground in daily basis, there is no gold-standard metric to measure how well the genertor works. We all know that several ML tasks’ standard metrics - such as mean square error (MSE) for linear regression and cross entropy for classification - but what about for GANs? How do we choose the best model upon our model selection? Why is evaluating GANs hard? Let’s break down the necessities first. We need to take care of two main characterstics for the generated images: fidelity and diversity. Fidelity Quality of images - how realistic are the generated images; discriminability. Diversity Variaty of images. GANs should not generate single image any time. Not only for those two, it has been suggested to measure disentanglement of the latent space, boundness, agreement with human perceptual judgements, etc.1 After all those traits to fulfill, there has yet to appear a concurred metric for evaluating GANs. Qualitative Measurements Qualitative measures, from Ali(2019).1 It is definitely possible to hire persons to manually evaluate each model, but is not a valid option in ordinary cases due to the cost and consistency issues. According to the survey paper, there are some of qualitative approaches to measure performance of GANs: Nearest Neighbors Rapid Scene Categorization Rating and Preference Judgment Evaluating Mode Drop and Mode Collapse Investigating and Visualizing the Internals of Networks. All above requires human participants, but if those are done by M-Turk or equivalent cost-efficient services, they can be some promising measures to detect apparent features. We’ll skip the thorough examination of each metric in this post. Instead, let’s focus on some quantitative metrics which are widely used. Quantitative Measurements Quantitative measures, from Ali(2019).1 There are tons of metrics suggested above, but we’ll focus on Inception Score (IS), Fréchet Incption Distance (FID) and Maximum Mean Discrepancy (MMD) from the table. Inception Score (IS) IS is based on the pre-trained ImageNet model, Inception-v3. This metric measures the Kullback-Leibler divergence between the conditional and marginal label distributions over generated data. Defined as: \[IS(\mathcal{G}) = \exp [ \mathbb{E}_{x \sim \mathbb{P}_\mathcal{G}} D_{KL}(p_\mathcal{M}(y|x) \| p_\mathcal{M}(y)) ]\] where $\mathcal{G}$ stands for generator model in interest, pre-trained inception model $\mathcal{M}$. Though IS is widely adopted through many literatures, shortcomings of IS emerged. First, the metric depends on the distributions, both based on $\mathcal{M}$, and second, the distribution of the real data ($\mathbb{P}_{r}$) is not used anywhere.2 Hence, IS is prone to be exploited or gamed. This means the model can overfit to ‘easier’ classes, not covering the whole labels. miss useful ‘real’ features, as the metric only relies on $\mathcal{M}$. Fréchet Inception Distance (FID) FID is suggested to overcome IS’s shortcomings. This idea is originated from the signal difference metric. According to DeepLearning.ai’s explanation, we can understand the original Fréchet distance as minimum leash distance between a human and a dog strolling. FID uses not only pre-trained Inception-v3’s feature maps, but also bases on the objective dataset’s distribution. Defined as: \[FID(r, \mathcal{G}) = \| \mu_r - \mu_\mathcal{G} \|^2_2 + tr ( \Sigma_r + \Sigma_\mathcal{G} - 2 \sqrt{\Sigma_r \Sigma_\mathcal{G}} )\] where $\mu_\cdot$ is the mean and $\Sigma_\cdot$ is the covariance matrix. The lower the FID, the better model $\mathcal{G}$ is. Hence, FID is likely to measure the FD between two multivariate normal distributions. FID still has limitations such as: cannot capture all the real features as it puts its feet on Inception. needs a large sample size to reduce noise during the calculation. only limited statistics used. Normal distribution assumption could lose information. Based on my experience, pytorch-FID took ~2 min for 3K and 5K image pools one Nvidia Titan RTX. Maximum Mean Discrepancy (MMD) Above two metric are widely used in practice, but we can also take a look at a non-Inception-based metric. MMD measures the dissimiliarity between the real distribution and generated distribution for some fixed kernel function $k$. \[MMD_k (r, \mathcal{G}) = \mathbb{E}_{x, x' \sim \mathbb{P}_r} [k(x, x')] - 2\mathbb{E}_{x \sim \mathbb{P}_r,\ y \sim \mathbb{P}_\mathcal{G}} [k(x, y)] + \mathbb{E}_{y, y' \sim \mathbb{P}_\mathcal{G}} [k(y, y')]\] Empirically, MMD works well with the kernels on feature space of pre-trained ResNet. The computing complexity is also low, so some studies suggest to use this metric.2 Bonus: Perceptual Path Length (PPL) For the last metric, we can also take look at the off-topic-but-maybe-useful measurement. PPL is first introduced in StyleGAN3 for measuring “how a generator manages smoothly interpolate between points in its latent space”. The authors used VGG16 embeddings for comparison to concur with human perception. PPL on the latent space $\mathcal{Z}$ would be: \[PPL_\mathcal{Z} = \mathbb{E} \left[ \frac{1}{\epsilon^2} d(\mathcal{G}(\text{slerp}(z_1, z_2; t)), \mathcal{G}(\text{slerp}(z_1, z_2; t+\epsilon))) \right]\] where $d$ is the perceptual distance between the images on VGG16, $\text{slerp}$ is the spherical linear interpolation, and $\epsilon=10^{-4}$ as an arbitrary small number. This looks sneezy but this means the empirical mean of the perceptual distances between consequently generated images. This measure fits perfectly to the objective of StyleGAN - to learn the disentangled continuously controllable styles with the latent vectors. Wrap up Although FID and IS are widely used in the field, they are still not the gold-standard for the GAN performance metric. Researchers are seeking alternatives, so we can wait for the brains of the era find the result :smile: Read more How to evaluate generative adversarial networks, J. Brownlee, 2019 Evaluation, DeepLearning.ai on Coursera, 2020 Borji, Ali. “Pros and cons of gan evaluation measures.” Computer Vision and Image Understanding 179 (2019): 41-65 &amp;#8617; &amp;#8617;2 &amp;#8617;3 Xu, Qiantong, et al. “An empirical study on evaluation metrics of generative adversarial networks.” arXiv preprint arXiv:1806.07755 (2018). &amp;#8617; &amp;#8617;2 Karras, Tero, Samuli Laine, and Timo Aila. “A style-based generator architecture for generative adversarial networks.” Proceedings of the IEEE conference on computer vision and pattern recognition. 2019. &amp;#8617;</summary></entry><entry><title type="html">Welcome</title><link href="/2021/01/06/welcome.html" rel="alternate" type="text/html" title="Welcome" /><published>2021-01-06T00:00:00-08:00</published><updated>2021-01-06T00:00:00-08:00</updated><id>/2021/01/06/welcome</id><content type="html" xml:base="/2021/01/06/welcome.html">&lt;p&gt;Welcome to Wonryong Ryou’s personal webpage. Will be randomly updated with anything:)&lt;/p&gt;</content><author><name>Wonryong Ryou</name><email>w.r.ryou@gmail.com</email></author><category term="announcement" /><summary type="html">Welcome to Wonryong Ryou’s personal webpage. Will be randomly updated with anything:)</summary></entry></feed>
