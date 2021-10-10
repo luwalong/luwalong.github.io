@@ -38,6 +38,9 @@
       .npm-button {
         @include clickable($text-color-1, $npm-color);
       }
+      .quora-button {
+        @include clickable($text-color-1, $quora-color);
+      }
     }
   }
 }

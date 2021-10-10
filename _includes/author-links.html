@@ -116,5 +116,14 @@
       </li>
     {%- endif -%}
 
+    {%- if _author.quora -%}
+      <li title="{{ _locale_string_follow | replace: '[NAME]', 'Quora' }}">
+        <a class="button button--circle quora-button" itemprop="sameAs"
+          href="https://www.quora.com/profile/{{ _author.quora }}" target="_blank">
+          <div class="icon">{%- include svg/icon/social/quora.svg -%}</div>
+        </a>
+      </li>
+    {%- endif -%}
+
   </ul>
 </div>
