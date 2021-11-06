@@ -4,6 +4,13 @@ title: About Me
 key: page-about
 ---
 
+## Working Experience
+
++ **Machine Learning Engineer** @[Quora](https://quora.com/), 09.2021 -
+  - In distribution team (contents recommendation)
+  - Setup hypothesis - qualitatively evaluate - implement - run experiment
+
+
 ## Education
 
 + MSc in [Data Science](https://www.inf.ethz.ch/studies/master/master-ds.html), *Eidgenössische Technische Hochschule Zürich*, 09.2018 - 05.2021
@@ -14,18 +21,11 @@ key: page-about
 
 ## Topics in Interest
 
-+ Robustness Certification of Neural Networks
-+ Generative Adversarial Networks (GANs)
-+ Explainable Artificial Intelligence
++ Recommendation System
 + General Data Science
++ Explainable Artificial Intelligence
++ Robustness Certification of Neural Networks
 + Artificial Intelligence Ethics
-
-
-## Working Experience
-
-+ **Machine Learning Engineer** @[Quora](https://quora.com/), 09.2021 -
-  - In distribution team (contents recommendation)
-  - Setup hypothesis - qualitatively evaluate - implement - run experiment
 
 
 ## Publications
@@ -73,5 +73,5 @@ key: page-about
 + **Silver Medal** from APIO 2010
 
 
-[linkedin](https://www.linkedin.com/in/wonryong/) / [facebook](https://www.facebook.com/luwalong) / [email](mailto:w.r.ryou@gmail.com)
+[quora](https://www.quora.com/profile/Wonryong-Ryou) / [linkedin](https://www.linkedin.com/in/wonryong/) / [facebook](https://www.facebook.com/luwalong) / [email](mailto:w.r.ryou@gmail.com)
 
